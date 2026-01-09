@@ -6,19 +6,44 @@ int main(int ac, char **arg, char **envp)
 	char *input;
     char *path = "/bin/ls";
 	int num = 0;
-	char **new;
+	int *new;
 	int i = 0;
     
 	
 		input = readline("minishell$ ");
 		//execv(path, &input);	
-		num = num_of_word(input);
-		printf("%d\n",num);
-		new = word_count(input);
+		new = len_of_word(input);
 		while(new[i])
 		{
-			printf("%s\n", new[i]);
+			printf("%d\n", new[i]);
 			i++;
 		}
-    return (1);
+    return (0);
 }
+//while (input[i] == ' ' || input[i] == '\t')
+//			i++;
+//		len = i;
+//		while (input[i] && (input[i] != ' ' && input[i] != '\t'))
+//		{
+//			while (input[i] == ' ' || input[i] == '\t')
+//				i++;
+//			if (input[i] == '"' || input[i] == '\'')
+//			{
+//				i++;
+//				while (input[i] != '"' && input[i] != '\'')
+//					i++;
+//				len = i - len;
+//				length[j] = len;
+//				j++;
+//				i++;
+//			}
+//			else if(input[i] && (input[i] != ' ' && input[i] != '\t'))
+//			{
+//				while (input[i] && (input[i] != ' ' && input[i] != '\t'))
+//					i++;
+//				len = i - len;
+//				length[j] = len;
+//				j++;
+//			}
+//		}
+//		length[j] = '\0';
