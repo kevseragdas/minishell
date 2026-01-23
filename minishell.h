@@ -13,6 +13,7 @@ char 	*del_quotes(char *input, char c);
 int 	is_one_quote(char *input, char c);
 char 	**word_count(char *input);
 int		num_of_word(char *input);
-int 	*len_of_word(char *input);
+int 	get_word_len(char *input, int index);
+int 	is_quote(char c);
 
 #endif

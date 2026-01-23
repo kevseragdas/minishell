@@ -5,45 +5,33 @@ int main(int ac, char **arg, char **envp)
 	(void)ac;
 	char *input;
     char *path = "/bin/ls";
-	int num = 0;
-	int *new;
+	char **new;
 	int i = 0;
+	int j = 0;
+	int num = 0;
     
 	
 		input = readline("minishell$ ");
 		//execv(path, &input);	
-		new = len_of_word(input);
+		j = get_word_len(input, 0);
+		if(is_empty(input))
+		{
+			printf("empty\n");
+			return (0);
+		}
+		if (!is_one_quote(input, '"') || !is_one_quote(input, '\''))
+		{
+			printf("error: unclosed double quote\n");
+			return (0);
+		}
+		num = num_of_word(input);
+		printf("num: %d\n",num);                                                                                                                                                     
+		new = word_count(input);
 		while(new[i])
 		{
-			printf("%d\n", new[i]);
+			printf("%s\n", new[i]);
 			i++;
 		}
+		
     return (0);
 }
-//while (input[i] == ' ' || input[i] == '\t')
-//			i++;
-//		len = i;
-//		while (input[i] && (input[i] != ' ' && input[i] != '\t'))
-//		{
-//			while (input[i] == ' ' || input[i] == '\t')
-//				i++;
-//			if (input[i] == '"' || input[i] == '\'')
-//			{
-//				i++;
-//				while (input[i] != '"' && input[i] != '\'')
-//					i++;
-//				len = i - len;
-//				length[j] = len;
-//				j++;
-//				i++;
-//			}
-//			else if(input[i] && (input[i] != ' ' && input[i] != '\t'))
-//			{
-//				while (input[i] && (input[i] != ' ' && input[i] != '\t'))
-//					i++;
-//				len = i - len;
-//				length[j] = len;
-//				j++;
-//			}
-//		}
-//		length[j] = '\0';

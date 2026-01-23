@@ -1,5 +1,14 @@
 #include "minishell.h"
 
+int is_space(char c)
+{
+    return (c == ' ' || c == '\t');
+}
+
+int is_quote(char c)
+{
+	return (c == '"' || c == '\'');
+}
 int	is_empty(char *input)
 {
 	int i;
@@ -24,7 +33,7 @@ int is_one_quote(char *input, char c)
 
 	i = 0;
 	count = 0;
-	while (input)
+	while (input[i])
 	{
 		if (input[i] == c)
 			count++;
@@ -54,121 +63,89 @@ char *del_quotes(char *input, char c)
 	return (new);
 }
 
-int *len_of_word(char *input)
-{
-	int i;
-	int j;
-	int *length;
-	int len;
-	int num;
-
-	num = num_of_word(input);
-	length = malloc(sizeof(int) * (num + 1));
-	j = 0;
-	len = 0;
-	i = 0;
-	while (input[i])
-	{
-		while(input[i] && input[i] == ' ')
-			i++;
-		len = i;
-		printf("len: %d\n", len);
-		if(input[i] && input[i] != '"')
-		{
-			while(input[i] && input[i] != ' ')
-				i++;
-			length[j] = i - len;
-			j++;
-		}
-		else if (input[i] && input[i] == '"')
-		{
-			i++;
-			while (input[i] && input[i] != '"')
-				i++;
-			i++;
-			length[j] = i - len - 2;
-			j++;
-		}
-	}
-	printf("j: %d\n", j);
-	length[j] = '\0';
-	return (length);
-}
-
 int num_of_word(char *input)
 {
-	int i;
-	int	count;
+    int i = 0;
+    int count = 0;
+    char quote_char;
 
-	count = 0;
-	i = 0;
-	while (input[i])
-	{
-		while (input[i] == ' ' || input[i] == '\t')
-			i++;
-		if (input[i])
-			count++;
-		while (input[i] && (input[i] != ' ' && input[i] != '\t'))
-		{
-			if (input[i] == '"' || input[i] == '\'')
-			{
-				count++;
-				i++;
-				while (input[i] != '"' && input[i] != '\'')
-					i++;
-				i++;
-			}
-			while (input[i] && (input[i] != ' ' && input[i] != '\t'))
-				i++;
-			i++;
-		}
-		i++;
-	}
-	return (count);
+    while (input[i])
+    {
+        while (input[i] && is_space(input[i]))
+            i++;
+        if (input[i])
+            count++;
+        while (input[i] && !is_space(input[i]))
+        {
+            if (is_quote(input[i]))
+            {
+                quote_char = input[i];
+                i++;
+                while (input[i] && input[i] != quote_char)
+                    i++;
+            }
+            if (input[i])
+                i++;
+        }
+    }
+    return (count);
 }
+
+int get_word_len(char *input, int index)
+{
+    int i = 0;
+    char quote = 0;
+    while (input[index + i] && (!is_space(input[index + i]) || quote != 0))
+    {
+        if (is_quote(input[index + i]))
+        {
+            if (quote == 0)
+                quote = input[index + i];
+            else if (quote == input[index + i])
+                quote = 0;
+        }
+        i++;
+    }
+    return (i);
+}
+
 char **word_count(char *input)
 {
-	int	i;
-	int j;
-	int k;
-	int num;
-	char **new;
+    int i = 0;
+    int k = 0;
+    int index = 0;
+    int len = 0;
+    int num;
+    char **new;
 
-	num = num_of_word(input);
-	new = malloc(num + 1);
-	j = 0;
-	while (input[i] && j < num)
-	{
-		while (input[i] == ' ' || input[i] == '\t')
-			i++;
-		while (input[i] && (input[i] != ' ' && input[i] != '\t'))
-		{
-			if (input[i] == '"' || input[i] == '\'')
-			{
-				i++;
-				while (input[i] && (input[i] != '"' && input[i] != '\''))
-				{
-					new[j][k] = input[i];
-					k++;
-					i++;
-				}
-				i++;
-				j++;
-				k = 0;
-			}
-			else
-			{
-				while(input[i] && (input[i] != ' ' && input[i] != '\t'))
-				{
-					new[j][k] = input[i];
-					k++;
-					i++;
-					if(input[i] == ' ' || input[i] == '\t')
-						j++;
-				}
-				k = 0;
-			}
-		}
-	}
-	return (new);
+    num = num_of_word(input);
+    new = malloc(sizeof(char *) * (num + 1));
+    if (!new)
+        return (NULL);
+
+    while (input[i] && index < num) 
+    {
+        while (is_space(input[i]))
+            i++;
+        if (input[i]) 
+        {
+            len = get_word_len(input, i);
+            new[index] = malloc(len + 1);
+            if (!new[index])
+                 return (NULL);
+            k = 0; 
+            while (len > 0 && input[i])
+            {
+                new[index][k] = input[i];
+                i++;
+                k++;
+                len--;
+            }
+            new[index][k] = '\0';
+            index++;
+        }
+    }
+    new[index] = NULL;
+    return (new);
 }
+
