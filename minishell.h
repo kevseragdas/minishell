@@ -9,7 +9,7 @@
 # include "libft/libft.h"  
 
 int		is_empty(char *input);
-char 	*del_quotes(char *input, char c);
+char 	*del_quotes(char *input);
 int 	is_one_quote(char *input, char c);
 char 	**word_count(char *input);
 int		num_of_word(char *input);

@@ -44,23 +44,35 @@ int is_one_quote(char *input, char c)
 	return (0);
 }
 
-char *del_quotes(char *input, char c)
+char *del_quotes(char *input)
 {
-	int	i;
-	int	j;
-	char	*new;
+	int i = 0;
+    int j = 0;
+    char quote = 0;
+    char *cleaned;
 
-	i = 0;
-	j = 0;
-	while (input[i])
-	{
-		if (input[i] == c)
-			i++;
-		new[j] = input[i];
-		j++;
-		i++;
-	}
-	return (new);
+    cleaned = malloc(ft_strlen(input) + 1);
+    if (!cleaned)
+        return (NULL);
+
+    while (input[i])
+    {
+        if (is_quote(input[i]))
+        {
+            if (quote == 0)
+                quote = input[i];
+            else if (quote == input[i])
+                quote = 0;
+            else
+                cleaned[j++] = input[i];
+        }
+        else
+            cleaned[j++] = input[i];
+        i++;
+    }
+    cleaned[j] = '\0';
+    return (cleaned);
+	
 }
 
 int num_of_word(char *input)
