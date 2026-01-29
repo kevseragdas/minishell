@@ -8,7 +8,7 @@
 # include <readline/history.h>
 # include "libft/libft.h"  
 
-void    free_token_list(t_tokens **tokens);
+
 
 int		is_empty(char *input);
 char 	*del_quotes(char *input);
@@ -17,6 +17,8 @@ char 	**word_count(char *input);
 int		num_of_word(char *input);
 int 	get_word_len(char *input, int index);
 int 	is_quote(char c);
+
+
 
 
 typedef enum s_token_type {
@@ -36,6 +38,9 @@ typedef struct s_tokens {
     
 } t_tokens ;
 
+
+void    free_token_list(t_tokens **tokens);
+void check_token_syntax(t_tokens **token);
 
 
 #endif
