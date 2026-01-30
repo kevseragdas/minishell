@@ -1,5 +1,10 @@
 #include "minishell.h"
 
+void syntax_error(t_tokens **token)
+{
+    free_token_list(token);
+    write(2, "minishell: syntax error!\n", 26);
+}
 
 void check_token_syntax(t_tokens **token)
 {
