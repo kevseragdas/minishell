@@ -9,6 +9,12 @@ int is_quote(char c)
 {
 	return (c == '"' || c == '\'');
 }
+
+int is_operator(char c)
+{
+    return (c == '|' || c == '<' || c == '>');
+}
+
 int	is_empty(char *input)
 {
 	int i;
@@ -161,3 +167,43 @@ char **word_count(char *input)
     return (new);
 }
 
+t_tokens *mini_split(char *input)
+{
+    t_tokens *head;
+    int i;
+
+    head = NULL;
+    i = 0;
+    while (input[i])
+    {
+        while (input[i] && is_space(input[i]))
+            i++;
+        if (!input[i])
+            break;
+        if(is_operator(input[i]))
+        {
+            operator_find(input[i], &head);
+            if(input[i] == '<<' || input[i] == '>>')
+                i=+2;
+            else
+                i++; 
+        }
+        else
+        {
+            while()
+        }
+    }
+}
+void operator_find(char c, t_tokens *head)
+{
+    if(c == '|')
+        add_token(&head, ft_strdup("|"), PIPE);
+    else if(c == '<')
+        add_token(&head, ft_strdup("<"), REDIR_IN);
+    else if(c == '<<')
+        add_token(&head, ft_strdup("<<"), HEREDOC);
+    else if(c == '>')
+        add_token(&head, ft_strdup(">"), REDIR_OUT);  
+    else if(c == '>>')
+        add_token(&head, ft_strdup(">>"), REDIR_APPEND);
+}
