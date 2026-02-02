@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "parse.h"
 
 void    find_redirs(t_cmds **cmd, t_tokens *tmp)
 {

@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "parse.h"
 
 void syntax_error(t_tokens **token)
 {

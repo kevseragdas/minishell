@@ -6,28 +6,31 @@ LIBS = -lreadline
 LIBFT_DIR = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SRCS = main.c parse.c free_token_list.c check_token_syntax.c create_cmds.c create_redirs.c
+PARS_DIR = ./parse
+PARSE = $(PARS_DIR)/parse.a
 
+SRCS = main.c 
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(LIBS) -o $(NAME)
+$(NAME): $(PARSE) $(LIBFT) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS)  $(PARSE) $(LIBFT) $(LIBS) -o $(NAME)
 
 $(LIBFT):
 	make -C $(LIBFT_DIR)
-
-%.o: %.c
-	$(CC) $(CFLAGS) -I$(LIBFT_DIR) -c $< -o $@
+$(PARSE):
+	make -C $(PARS_DIR)
 
 clean:
 	rm -f $(OBJS)
 	make -C $(LIBFT_DIR) clean
+	make -C $(PARS_DIR) clean
 
 fclean: clean
 	rm -f $(NAME)
 	make -C $(LIBFT_DIR) fclean
+	make -C $(PARS_DIR) fclean
 
 re: fclean all
 

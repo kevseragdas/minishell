@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "parse.h"
 
 int is_space(char c)
 {
