@@ -19,7 +19,8 @@ int 	get_word_len(char *input, int index);
 int 	is_quote(char c);
 
 
-
+/////////////////////////////
+// token list structure and functions:
 
 typedef enum s_token_type {
     WORD,
@@ -38,9 +39,35 @@ typedef struct s_tokens {
     
 } t_tokens ;
 
-
 void    free_token_list(t_tokens **tokens);
 void check_token_syntax(t_tokens **token);
+
+
+////////////////////////////////
+// for cmds until pipe and functions:
+
+typedef struct s_redirs{
+    t_token_type type;
+    char *target;
+    int fd;
+    struct s_redirs *next;
+} t_redirs ;
+
+typedef struct s_cmds {
+    char **argv;
+    t_redirs *redirs;
+    int in_fd;
+    int out_fd;
+    struct s_cmds *next;
+} t_cmds ;
+
+void    find_redirs(t_cmds **cmd, t_tokens *tmp);
+void    free_redirs(t_redirs **redir);
+void    free_cmd_list(t_cmds **cmd_list);
+t_cmds    *create_cmd_list(t_tokens *tmp);
+
+
+/////////////////////////////////////////////
 
 
 #endif
