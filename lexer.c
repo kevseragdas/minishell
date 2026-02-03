@@ -103,7 +103,7 @@ t_tokens	*lexer(char *input)
 		{
 			if (!handle_word(input, &i, &head))
 			{
-				write(2,"Error: Unclosed quotes\n");
+				write(2,"Error: Unclosed quotes\n", 24);
 				free_token_list(&head);
 				return (NULL);
 			}
