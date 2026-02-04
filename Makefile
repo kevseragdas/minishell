@@ -6,7 +6,7 @@ LIBS = -lreadline
 LIBFT_DIR = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SRCS = main.c lexer.c free_token_list.c check_token_syntax.c
+SRCS = main.c lexer.c free_token_list.c check_token_syntax.c envp_handle.c
 
 OBJS = $(SRCS:.c=.o)
 

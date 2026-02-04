@@ -9,10 +9,10 @@
 # include "libft/libft.h"  
 
 typedef struct s_cmd {
-    char            **args;    // ["ls", "-l", NULL]
-    int             fd_in;
-    int             fd_out;
-    struct s_cmd    *next;
+    char			**args;    // ["ls", "-l", NULL]
+    int				fd_in;
+    int				fd_out;
+    struct s_cmd	*next;
 } t_cmd;
 
 typedef enum s_token_type {
@@ -25,10 +25,10 @@ typedef enum s_token_type {
 } t_token_type ;
 
 typedef struct s_tokens {
-    t_token_type type;
-    char    *value;
-    struct s_tokens *prev;
-    struct s_tokens *next;
+    t_token_type	type;
+    char			*value;
+    struct s_tokens	*prev;
+    struct s_tokens	*next;
     
 } t_tokens ;
 
@@ -41,5 +41,8 @@ void        add_token(t_tokens **head, char *value, t_token_type type);
 int	        handle_word(char *s, int *i, t_tokens **head);
 void	    handle_operator(char *s, int *i, t_tokens **head);
 t_tokens	*lexer(char *input);
+int         get_env_len(char **envp);
+char        **copy_env(char **envp);
+char        *get_env_value(char *var_name, char **env);
 
 #endif
