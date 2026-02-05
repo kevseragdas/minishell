@@ -11,7 +11,7 @@ int pwd_builtin(void)
     }
     else
     {
-        printf("getcwd() error!\n");
+        print_error("getcwd() error!\n");
     }
     return (1);
 }

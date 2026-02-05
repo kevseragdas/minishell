@@ -1,18 +1,19 @@
 #include "parse.h"
 
-void syntax_error(t_tokens **token)
+int syntax_error(t_tokens **token)
 {
     free_token_list(token);
     write(2, "minishell: syntax error!\n", 26);
+    return (258);
 }
 
-void check_token_syntax(t_tokens **token)
+int check_token_syntax(t_tokens **token)
 {
     t_tokens    *tmp;
 
     tmp = *token;
     if(!tmp)
-        return ;
+        return (1);
     //first token shouldn't be PIPE
     if(tmp->type == 1)
         return (syntax_error(token));
@@ -31,4 +32,5 @@ void check_token_syntax(t_tokens **token)
     // last token should be WORD, not PIPE REDIR etc.
     if(tmp && tmp->type != 0)
         return (syntax_error(token));
+    return (0);
 }

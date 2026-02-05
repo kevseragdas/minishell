@@ -6,13 +6,7 @@
 # include <readline/history.h>
 
 
-int		is_empty(char *input);
-char 	*del_quotes(char *input);
-int 	is_one_quote(char *input, char c);
-char 	**word_count(char *input);
-int		num_of_word(char *input);
-int 	get_word_len(char *input, int index);
-int 	is_quote(char c);
+
 
 
 /////////////////////////////
@@ -36,8 +30,9 @@ typedef struct s_tokens {
 } t_tokens ;
 
 void    free_token_list(t_tokens **tokens);
-void check_token_syntax(t_tokens **token);
+int check_token_syntax(t_tokens **token);
 
+t_tokens	*lexer(char *input);
 
 ////////////////////////////////
 // for cmds until pipe and functions:

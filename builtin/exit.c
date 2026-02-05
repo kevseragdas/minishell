@@ -5,7 +5,7 @@ int exit_builtin(t_cmds *cmd)
 {
     if(cmd->argv[1])
     {
-        printf("exit : too many arguments!\n");
+        write(2, "exit: too many arguments\n", 25);
         return (1);
     }
     exit(0);

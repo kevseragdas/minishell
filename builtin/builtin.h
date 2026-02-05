@@ -12,6 +12,9 @@ typedef struct s_envp{
 } t_envp ;
 
 int ft_strcmp(const char *s1, const char *s2);
+int  find_equal_sign(char *str);
+void print_error(char *msg);
+void    find_key_value(char *env_string, char **key, char **value);
 void    get_envp(t_envp **env_head, char **envp);
 void    free_envp_list(t_envp **envp);
 int is_builtin(char *cmd);
@@ -19,6 +22,7 @@ int pwd_builtin(void);
 int echo_builtin(t_cmds *cmd);
 int env_builtin(t_cmds *cmd, t_envp *env_list);
 int exit_builtin(t_cmds *cmd);
-int cd_builtin(t_cmds *cmd);
+int cd_builtin(t_cmds *cmd, t_envp **env);
+int unset_builtin(t_cmds *cmd, t_envp **env);
 
 #endif
