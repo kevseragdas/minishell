@@ -1,6 +1,13 @@
 NAME = minishell
 CC = cc
-CFLAGS = -g
+
+# DÜZELTME BURADA: Include yollarını (-I) ekledik
+# -I.        : Şu anki klasör (minishell.h için)
+# -I./builtin: Builtin klasörü (builtin.h için)
+# -I./parse  : Parse klasörü
+# -I./libft  : Libft klasörü
+CFLAGS = -Wall -Wextra -Werror -g -I. -I./builtin -I./parse -I./libft
+
 LIBS = -lreadline
 
 LIBFT_DIR = ./libft
@@ -20,6 +27,7 @@ all: $(NAME)
 $(NAME): $(PARSE) $(BUILTIN) $(LIBFT) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS)  $(PARSE) $(BUILTIN) $(LIBFT) $(LIBS) -o $(NAME)
 
+# Alt klasörlerdeki makefile'ları çağırır
 $(LIBFT):
 	make -C $(LIBFT_DIR)
 $(PARSE):

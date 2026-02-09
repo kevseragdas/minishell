@@ -8,7 +8,7 @@ int env_builtin(t_cmds *cmd, t_envp *env_list)
     {
         write(2, "env: ", 5);
         write(2, cmd->argv[1], ft_strlen(cmd->argv[1]));
-        write(2, ": No such file or directory\n", 28);
+        (2, ": No such file or directory\n", 28);
         return (127);
     }    
     tmp = env_list;

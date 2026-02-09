@@ -2,14 +2,14 @@
 
 int is_valid_identifier(char *arg)
 {
-    int j = 0;
-
+    int j;
+    
     if (!arg || !arg[0])
         return (0);
 
     if (!(ft_isalpha(arg[0]) || arg[0] == '_'))
         return (0);
-
+    j = 1;
     while (arg[j] && arg[j] != '=')
     {
         if (!(ft_isalnum(arg[j]) || arg[j] == '_'))

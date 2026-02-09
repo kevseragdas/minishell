@@ -2,7 +2,7 @@ NAME = parse.a
 CFLAGS = 
 LIBS = -lreadline
 
-SRCS = lexer.c free_token_list.c check_token_syntax.c create_cmds.c create_redirs.c
+SRCS = lexer.c free_token_list.c check_token_syntax.c create_cmds.c create_redirs.c 
 
 OBJS = $(SRCS:.c=.o)
 

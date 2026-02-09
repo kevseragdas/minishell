@@ -23,8 +23,9 @@ void    find_key_value(char *env_string, char **key, char **value)
     }
 
     *key = malloc(equal_indx + 1);
-    *value = malloc(ft_strlen(env_string) - equal_indx);
-
+    *value = malloc(ft_strlen(env_string) - equal_indx + 1);
+    if(!*value)
+        return ;
     if (!*key || !*value)
     {
         free(*key);
@@ -33,7 +34,7 @@ void    find_key_value(char *env_string, char **key, char **value)
     }
 
     ft_strlcpy(*key, env_string, equal_indx + 1);
-    ft_strlcpy(*value, env_string + equal_indx + 1, ft_strlen(env_string) - equal_indx);
+    ft_strlcpy(*value, env_string + equal_indx + 1, ft_strlen(env_string) - equal_indx + 1);
 }
 
 t_envp    *get_envp_helper(char *env_string)
@@ -70,7 +71,10 @@ void    get_envp(t_envp **env_head, char **envp)
     {
         new = get_envp_helper(envp[i]);
         if(!new)
+        {
+            free_envp_list(&head);
             return ;
+        }
         if(head == NULL)
         {
             head = new;
