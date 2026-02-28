@@ -1,5 +1,5 @@
 
-#include "minishell.h"
+#include "parse.h"
 
 int	is_sep(char c)
 {
@@ -14,14 +14,14 @@ void	quote_check(char c, char *quote)
 		*quote = 0;
 }
 
-void add_token(t_tokens **head, char *value, t_token_type type)
+int add_token(t_tokens **head, char *value, t_token_type type)
 {
     t_tokens *new_node;
     t_tokens *temp;
 
     new_node = malloc(sizeof(t_tokens));
     if (!new_node)
-        return ;
+        return (1);
     
     new_node->value = value;
     new_node->type = type;
@@ -38,6 +38,7 @@ void add_token(t_tokens **head, char *value, t_token_type type)
         temp->next = new_node;
         new_node->prev = temp;
     }
+	return (0);
 }
 
 int	handle_word(char *s, int *i, t_tokens **head)
