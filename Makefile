@@ -19,7 +19,7 @@ PARSE = $(PARS_DIR)/parse.a
 BUILTIN_DIR = ./builtin
 BUILTIN = $(BUILTIN_DIR)/builtin.a
 
-SRCS = main.c 
+SRCS = main.c signal.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
