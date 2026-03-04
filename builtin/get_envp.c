@@ -15,17 +15,25 @@ void    find_key_value(char *env_string, char **key, char **value)
     int equal_indx;
 
     equal_indx = find_equal_sign(env_string);
-    if (env_string[equal_indx] != '=')
+    if (env_string[equal_indx] == '\0')
     {
         *key = ft_strdup(env_string);
-        *value = ft_strdup("");
+        *value = NULL;
+        return;
+    }
+
+    if (env_string[equal_indx] == '=' && env_string[equal_indx + 1] == '\0')
+    {
+        *key = malloc(equal_indx + 1);
+        if (!*key)
+            return;
+        ft_strlcpy(*key, env_string, equal_indx + 1);
+        *value = ft_strdup(""); 
         return;
     }
 
     *key = malloc(equal_indx + 1);
     *value = malloc(ft_strlen(env_string) - equal_indx + 1);
-    if(!*value)
-        return ;
     if (!*key || !*value)
     {
         free(*key);

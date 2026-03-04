@@ -12,9 +12,7 @@
 # include "parse/parse.h"
 # include "builtin/builtin.h"
 
-// Sinyal fonksiyonlarımızın prototipleri
 void    set_signals_interactive(void);
-void    set_signals_executing(void);
-void    set_signals_heredoc(void);
+
 
 #endif

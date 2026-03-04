@@ -1,8 +1,8 @@
-NAME = parse.a
+NAME = execute.a
 CFLAGS = 
-LIBS = -lreadline
+LIBS = 
 
-SRCS = lexer.c free_token_list.c check_token_syntax.c create_cmds.c create_redirs.c
+SRCS = 
 
 OBJS = $(SRCS:.c=.o)
 

@@ -60,7 +60,7 @@ int export_builtin(t_cmds *cmd, t_envp **env)
     i = 1;
     if(!cmd->argv[1])
     {
-        env_builtin(cmd, *env);
+        print_sorted_envs(env);
         return (0);
     }
     while(cmd->argv[i])
