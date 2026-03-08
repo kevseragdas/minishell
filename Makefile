@@ -12,13 +12,16 @@ PARSE = $(PARS_DIR)/parse.a
 BUILTIN_DIR = ./builtin
 BUILTIN = $(BUILTIN_DIR)/builtin.a
 
+EXEC_DIR = ./execute
+EXEC = $(EXEC_DIR)/execute.a
+
 SRCS = main.c signal.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(PARSE) $(BUILTIN) $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS)  $(PARSE) $(BUILTIN) $(LIBFT) $(LIBS) -o $(NAME)
+$(NAME): $(PARSE) $(EXEC) $(BUILTIN) $(LIBFT) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS)  $(PARSE) $(EXEC) $(BUILTIN) $(LIBFT) $(LIBS) -o $(NAME)
 
 $(LIBFT):
 	make -C $(LIBFT_DIR)
@@ -26,18 +29,22 @@ $(PARSE):
 	make -C $(PARS_DIR)
 $(BUILTIN):
 	make -C $(BUILTIN_DIR)
+$(EXEC):
+	make -C $(EXEC_DIR)
 
 clean:
 	rm -f $(OBJS)
 	make -C $(LIBFT_DIR) clean
 	make -C $(PARS_DIR) clean
 	make -C $(BUILTIN_DIR) clean
+	make -C $(EXEC_DIR) clean
 
 fclean: clean
 	rm -f $(NAME)
 	make -C $(LIBFT_DIR) fclean
 	make -C $(PARS_DIR) fclean
 	make -C $(BUILTIN_DIR) fclean
+	make -C $(EXEC_DIR) fclean
 
 re: fclean all
 

@@ -7,7 +7,8 @@ void    free_token_list(t_tokens **tokens)
     while(*tokens)
     {
         tmp = (*tokens)->next;
-        free(*tokens);
+        free((*tokens)->value);  
+        free(*tokens);            
         *tokens = tmp;
     }
 }

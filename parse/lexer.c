@@ -59,6 +59,7 @@ int	handle_word(char *s, int *i, t_tokens **head)
 	if (quote != 0)
 		return (0);
 	// Kelimeyi kes ve listeye ekle
+	
 	add_token(head, ft_substr(s, start, *i - start), WORD);
 	return (1);
 }

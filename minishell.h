@@ -11,6 +11,7 @@
 # include "libft/libft.h"  
 # include "parse/parse.h"
 # include "builtin/builtin.h"
+# include "execute/execute.h"
 
 void    set_signals_interactive(void);
 

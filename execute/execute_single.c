@@ -4,7 +4,7 @@ int run_parent(t_cmds **cmd, t_envp **env)
 {
     int backup_stdin;
     int backup_stdout;
-    int status;  // for exit status
+    int status;
 
     backup_stdin = dup(STDIN_FILENO);
     backup_stdout = dup(STDOUT_FILENO);
