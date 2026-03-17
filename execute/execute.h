@@ -20,5 +20,8 @@ int redirections(t_cmds *cmd);
 int is_directory(char *path);
 void    errno_handler(void);
 int execute(t_cmds **cmd, t_envp **env);
-
+int handle_heredoc(t_redirs *redir);
+void	set_signals_executing(void);
+void	set_signals_interactive(void);
+void	set_signals_heredoc(void);
 #endif

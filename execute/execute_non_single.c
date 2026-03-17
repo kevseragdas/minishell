@@ -1,67 +1,80 @@
 #include "execute.h"
 
-int execute_non_single(t_cmds *cmd, t_envp **env)
+static void	handle_child(t_cmds *cmd, t_envp **env, int prev_fd, int fd[2])
 {
-    int fd[2];
-    int prev_fd_in;
-    pid_t pid;
-    pid_t last_pid;
-    int status;
+	set_signals_executing();
+	if (prev_fd != STDIN_FILENO)
+	{
+		dup2(prev_fd, STDIN_FILENO);
+		close(prev_fd);
+	}
+	if (cmd->next)
+	{
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+	}
+	if (redirections(cmd) < 0)
+		exit(1);
+	if (is_builtin(cmd->argv[0]))
+		exit(exec_builtin(&cmd, env, 0));
+	exec_external(cmd, *env);
+	exit(1);
+}
 
-    prev_fd_in = STDIN_FILENO;
-    while(cmd)
-    {
-        if(cmd->next && pipe(fd))
-        {
-            perror("pipe");
-            return (1);
-        }
-        pid = fork();
-        if(pid < 0)
-        {
-            perror("fork");
-            return (1);
-        }
-        else if(pid == 0)
-        {
-            dup2(prev_fd_in, STDIN_FILENO);
-            if(cmd->next)
-                dup2(fd[1], STDOUT_FILENO);
-            ///////////////
-            if (prev_fd_in != STDIN_FILENO)
-                close(prev_fd_in);
-            if (cmd->next)
-            {
-                close(fd[0]);
-                close(fd[1]);
-            }
-            //////////////
-            exec_external(cmd, *env);
-            exit (1);
-        }
-        else //parent process
-        {   
-            if (prev_fd_in != STDIN_FILENO)
-                close(prev_fd_in);
-            if (cmd->next)
-                close(fd[1]);
-            
-            if (cmd->next)
-                prev_fd_in = fd[0];
-            
-            last_pid = pid;
-        }
-        cmd = cmd->next;
-    }                
-    while ((pid = wait(&status)) > 0)
-    {
-        if (pid == last_pid) // sadece son child’ın status’ünü sakla
-        {
-            if (WIFEXITED(status))
-                return WEXITSTATUS(status);
-            else if (WIFSIGNALED(status))
-                return 128 + WTERMSIG(status);
-        }
-    }
-    return 1;
+static int	wait_processes(pid_t last_pid)
+{
+	pid_t	pid;
+	int		status;
+	int		final_status;
+
+	final_status = 1;
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	while ((pid = wait(&status)) > 0)
+	{
+		if (pid == last_pid)
+		{
+			if (WIFEXITED(status))
+				final_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+			{
+				if (WTERMSIG(status) == SIGINT)
+					write(1, "\n", 1);
+				else if (WTERMSIG(status) == SIGQUIT)
+					write(1, "Quit (core dumped)\n", 19);
+				final_status = 128 + WTERMSIG(status);
+			}
+		}
+	}
+	set_signals_interactive();
+	return (final_status);
+}
+
+int	execute_non_single(t_cmds *cmd, t_envp **env)
+{
+	int		fd[2];
+	int		prev_fd;
+	pid_t	pid;
+
+	prev_fd = STDIN_FILENO;
+	while (cmd)
+	{
+		if (cmd->next && pipe(fd))
+			return (perror("pipe"), 1);
+		pid = fork();
+		if (pid < 0)
+			return (perror("fork"), 1);
+		if (pid == 0)
+			handle_child(cmd, env, prev_fd, fd);
+		if (prev_fd != STDIN_FILENO)
+			close(prev_fd);
+		if (cmd->next)
+		{
+			close(fd[1]);
+			prev_fd = fd[0];
+		}
+		cmd = cmd->next;
+	}
+	return (wait_processes(pid));
 }
