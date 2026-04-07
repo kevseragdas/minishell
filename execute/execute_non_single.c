@@ -2,22 +2,34 @@
 
 static void	handle_child(t_cmds *cmd, t_envp **env, int prev_fd, int fd[2])
 {
+	int	redir_status;
+
 	set_signals_executing();
+
+	// 🔹 stdin (önceki pipe)
 	if (prev_fd != STDIN_FILENO)
 	{
 		dup2(prev_fd, STDIN_FILENO);
 		close(prev_fd);
 	}
+
+	// 🔥 1. REDIRECTION ÖNCE
+	redir_status = redirections(cmd);
+	if (redir_status != 0)
+		exit(redir_status);
+
+	// 🔥 2. PIPE SONRA
 	if (cmd->next)
 	{
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
 		close(fd[1]);
 	}
-	if (redirections(cmd) < 0)
-		exit(1);
+
+	// 🔥 3. EXEC
 	if (is_builtin(cmd->argv[0]))
 		exit(exec_builtin(&cmd, env, 0));
+
 	exec_external(cmd, *env);
 	exit(1);
 }

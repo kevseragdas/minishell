@@ -1,20 +1,23 @@
 #include "execute.h"
 
+static int	print_error(char *file)
+{
+	write(2, "minishell: ", 11);
+	perror(file);
+	return (1);
+}
+
 int	redir_in(t_redirs *redir)
 {
 	int	fd;
 
 	fd = open(redir->target, O_RDONLY);
 	if (fd < 0)
-	{
-		perror(redir->target);
-		return (-1);
-	}
+		return (print_error(redir->target));
 	if (dup2(fd, STDIN_FILENO) < 0)
 	{
-		perror("dup2");
 		close(fd);
-		return (-1);
+		return (print_error("dup2"));
 	}
 	close(fd);
 	return (0);
@@ -26,15 +29,11 @@ int	redir_out(t_redirs *redir)
 
 	fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-	{
-		perror(redir->target);
-		return (-1);
-	}
+		return (print_error(redir->target));
 	if (dup2(fd, STDOUT_FILENO) < 0)
 	{
-		perror("dup2");
 		close(fd);
-		return (-1);
+		return (print_error("dup2"));
 	}
 	close(fd);
 	return (0);
@@ -46,15 +45,11 @@ int	redir_append(t_redirs *redir)
 
 	fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
-	{
-		perror(redir->target);
-		return (-1);
-	}
+		return (print_error(redir->target));
 	if (dup2(fd, STDOUT_FILENO) < 0)
 	{
-		perror("dup2");
 		close(fd);
-		return (-1);
+		return (print_error("dup2"));
 	}
 	close(fd);
 	return (0);
@@ -63,22 +58,30 @@ int	redir_append(t_redirs *redir)
 int	redirections(t_cmds *cmd)
 {
 	t_redirs	*redir;
-	int			status;
 
 	redir = cmd->redirs;
-	status = 0;
 	while (redir)
 	{
 		if (redir->type == REDIR_IN)
-			status = redir_in(redir);
+		{
+			if (redir_in(redir))
+				return (1);
+		}
 		else if (redir->type == REDIR_OUT)
-			status = redir_out(redir);
+		{
+			if (redir_out(redir))
+				return (1);
+		}
 		else if (redir->type == REDIR_APPEND)
-			status = redir_append(redir);
+		{
+			if (redir_append(redir))
+				return (1);
+		}
 		else if (redir->type == HEREDOC)
-			status = handle_heredoc(redir);
-		if (status != 0)
-			return (-1);
+		{
+			if (handle_heredoc(redir))
+				return (1);
+		}
 		redir = redir->next;
 	}
 	return (0);

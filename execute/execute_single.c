@@ -5,16 +5,19 @@ int	run_parent(t_cmds **cmd, t_envp **env)
 	int	backup_stdin;
 	int	backup_stdout;
 	int	status;
+	int redir_status; // Yönlendirme durumunu tutmak için eklendi
 
 	backup_stdin = dup(STDIN_FILENO);
 	backup_stdout = dup(STDOUT_FILENO);
-	if (redirections(*cmd) < 0)
+	
+	redir_status = redirections(*cmd);
+	if (redir_status != 0)
 	{
 		dup2(backup_stdin, STDIN_FILENO);
 		dup2(backup_stdout, STDOUT_FILENO);
 		close(backup_stdin);
 		close(backup_stdout);
-		return (1);
+		return (redir_status); // Sabit 1 yerine yönlendirmeden gelen hata dönülüyor
 	}
 	status = exec_builtin(cmd, env, 1);
 	dup2(backup_stdin, STDIN_FILENO);
@@ -28,8 +31,8 @@ int	run_child(t_cmds **cmd, t_envp **env)
 {
 	pid_t	pid;
 	int		status;
+	int		redir_status; // Yönlendirme durumunu tutmak için eklendi
 
-	// SİHİR BURADA: Fork'tan ÖNCE ana prosesi korumaya alıyoruz!
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 
@@ -38,10 +41,16 @@ int	run_child(t_cmds **cmd, t_envp **env)
 		return (perror("fork"), 1);
 	if (pid == 0)
 	{
-		// Çocuk proses kendi sinyallerini yeniden ayarlıyor
 		set_signals_executing();
-		if (redirections(*cmd) < 0)
-			exit(1);
+		redir_status = redirections(*cmd);
+		if (redir_status != 0)
+		{
+			dup2(backup_stdin, STDIN_FILENO);
+			dup2(backup_stdout, STDOUT_FILENO);
+			close(backup_stdin);
+			close(backup_stdout);
+			return (1); // bash gibi
+		}
 		exec_external(*cmd, *env);
 		perror("minishell");
 		exit(1);

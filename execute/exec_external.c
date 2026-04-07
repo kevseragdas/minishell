@@ -16,18 +16,13 @@ void free_2d_arr(char **arr)
 
 void print_command_error(const char *cmd, int error_type)
 {
-    if (error_type == 127) // command not found
-    {
-        write(2, "minishell: ", 11);
-        write(2, cmd, ft_strlen(cmd));
-        write(2, ": command not found\n", 21);
-    }
-    else if (error_type == 126) // permission denied
-    {
-        write(2, "minishell: ", 11);
-        write(2, cmd, ft_strlen(cmd));
-        write(2, ": Permission denied\n", 21);
-    }
+	write(2, "minishell: ", 11);
+	write(2, cmd, ft_strlen(cmd));
+
+	if (error_type == 127)
+		write(2, ": command not found\n", 21);
+	else if (error_type == 126)
+		write(2, ": Permission denied\n", 21);
 }
 
 int check_access(char **paths, char **path, char *argv_0)
@@ -109,4 +104,5 @@ int exec_external(t_cmds *cmd, t_envp *env)
     free(path);
     free_2d_arr(arr_env);
     errno_handler();
+    return (1);
 }

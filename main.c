@@ -6,24 +6,23 @@ int main(int ac, char **av, char **envp)
     t_envp  *my_env = NULL;
     t_cmds *cmd;
     t_tokens *tokens;
-    int status;
+    int status = 0; // 1. DEĞİŞİKLİK: Başlangıç çıkış kodunu 0 yapıyoruz
 
     (void)ac; (void)av;
 
-    // Ortam değişkenlerini (environment variables) listeye alıyoruz
     get_envp(&my_env, envp);
-
-    // DÖNGÜ BAŞLAMADAN ÖNCE SİNYALLERİ İNTERAKTİF MODA ALIYORUZ
     set_signals_interactive();
 
     while (1)
     {
         input = readline("minishell$ ");
         
-        // Ctrl+D (EOF) basılırsa readline NULL döndürür
         if (!input)
         {
-            printf("exit\n"); // Bash'teki gibi ekrana exit yazdırıp çıkıyoruz
+            // 2. DEĞİŞİKLİK: Sadece interaktif moddaysa "exit" yazdır
+            // Tester komut yolladığında (non-interactive) Bash ekrana "exit" yazmaz!
+            if (isatty(STDIN_FILENO))
+                printf("exit\n"); 
             break;
         }
 
@@ -36,23 +35,16 @@ int main(int ac, char **av, char **envp)
             cmd = create_cmd_list(tokens);
             free_token_list(&tokens);
             
-            execute(&cmd, &my_env);
-            
-            
-            // Artık burada input'u kendi parser fonksiyonlarına göndereceksin.
-            // Örnek akış şu şekilde olacak:
-            // 1. Tokenize et
-            // 2. Parse et (ve redirleri ayarla)
-            // 3. Execute et
-
+            // 3. DEĞİŞİKLİK: Çalıştırılan komutun dönüş kodunu status'e kaydet
+            status = execute(&cmd, &my_env);
             
             free_cmd_list(&cmd);
-            
         }
         free(input);
     }
     
     free_envp_list(&my_env);
     
-    return (0);
+    // 4. DEĞİŞİKLİK: Her zaman 0 değil, elimizdeki son durumu (status) döndür
+    return (status);
 }
