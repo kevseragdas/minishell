@@ -1,36 +1,42 @@
 #include "parse.h"
 
-int syntax_error(t_tokens **token)
+static int	is_redir(t_token_type type)
 {
-    free_token_list(token);
-    write(2, "minishell: syntax error!\n", 26);
-    return (258);
+	return (type == REDIR_IN
+		|| type == REDIR_OUT
+		|| type == REDIR_APPEND
+		|| type == HEREDOC);
 }
 
-int check_token_syntax(t_tokens **token)
+static int	syntax_error(t_tokens **token)
 {
-    t_tokens    *tmp;
+	free_token_list(token);
+	write(2, "minishell: syntax error near unexpected token\n", 46);
+	return (258);
+}
 
-    tmp = *token;
-    if(!tmp)
-        return (1);
-    //first token shouldn't be PIPE
-    if(tmp->type == 1)
-        return (syntax_error(token));
-    
-    while(tmp && tmp->next)
-    {
-        while(tmp && tmp->type == 0)
-            tmp = tmp->next;
-        // after while i will have a token which is not WORD
-        // the next token after this must be WORD, not PIPE REDIR etc.
-        if(tmp && tmp->next && tmp->next->type != 0)
-            return (syntax_error(token));
-        if(tmp && tmp->next)
-            tmp = tmp->next;
-    }
-    // last token should be WORD, not PIPE REDIR etc.
-    if(tmp && tmp->type != 0)
-        return (syntax_error(token));
-    return (0);
+int	check_token_syntax(t_tokens **token)
+{
+	t_tokens	*tmp;
+
+	tmp = *token;
+	if (!tmp)
+		return (0);
+	if (tmp->type == PIPE)
+		return (syntax_error(token));
+	while (tmp)
+	{
+		if (tmp->type == PIPE)
+		{
+			if (!tmp->prev || !tmp->next || tmp->next->type == PIPE)
+				return (syntax_error(token));
+		}
+		if (is_redir(tmp->type))
+		{
+			if (!tmp->next || tmp->next->type != WORD)
+				return (syntax_error(token));
+		}
+		tmp = tmp->next;
+	}
+	return (0);
 }

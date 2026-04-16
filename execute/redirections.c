@@ -1,87 +1,102 @@
 #include "execute.h"
 
-static int	print_error(char *file)
-{
-	write(2, "minishell: ", 11);
-	perror(file);
-	return (1);
-}
-
-int	redir_in(t_redirs *redir)
+static int	redir_in(t_redirs *redir)
 {
 	int	fd;
 
 	fd = open(redir->target, O_RDONLY);
 	if (fd < 0)
-		return (print_error(redir->target));
+	{
+		perror(redir->target);
+		return (-1);
+	}
 	if (dup2(fd, STDIN_FILENO) < 0)
 	{
+		perror("dup2");
 		close(fd);
-		return (print_error("dup2"));
+		return (-1);
 	}
 	close(fd);
 	return (0);
 }
 
-int	redir_out(t_redirs *redir)
+static int	redir_out(t_redirs *redir)
 {
 	int	fd;
 
-	fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(redir->target, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd < 0)
-		return (print_error(redir->target));
+	{
+		perror(redir->target);
+		return (-1);
+	}
 	if (dup2(fd, STDOUT_FILENO) < 0)
 	{
+		perror("dup2");
 		close(fd);
-		return (print_error("dup2"));
+		return (-1);
 	}
 	close(fd);
 	return (0);
 }
 
-int	redir_append(t_redirs *redir)
+static int	redir_append(t_redirs *redir)
 {
 	int	fd;
 
-	fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	fd = open(redir->target, O_CREAT | O_WRONLY | O_APPEND, 0644);
 	if (fd < 0)
-		return (print_error(redir->target));
+	{
+		perror(redir->target);
+		return (-1);
+	}
 	if (dup2(fd, STDOUT_FILENO) < 0)
 	{
+		perror("dup2");
 		close(fd);
-		return (print_error("dup2"));
+		return (-1);
 	}
 	close(fd);
+	return (0);
+}
+
+static int	redir_heredoc(t_redirs *redir)
+{
+	if (redir->fd == -1)
+		return (-1);
+	if (dup2(redir->fd, STDIN_FILENO) < 0)
+	{
+		perror("dup2");
+		close(redir->fd);
+		redir->fd = -1;
+		return (-1);
+	}
+	close(redir->fd);
+	redir->fd = -1;
 	return (0);
 }
 
 int	redirections(t_cmds *cmd)
 {
 	t_redirs	*redir;
+	int			status;
 
+	if (!cmd)
+		return (0);
 	redir = cmd->redirs;
 	while (redir)
 	{
+		status = 0;
 		if (redir->type == REDIR_IN)
-		{
-			if (redir_in(redir))
-				return (1);
-		}
+			status = redir_in(redir);
 		else if (redir->type == REDIR_OUT)
-		{
-			if (redir_out(redir))
-				return (1);
-		}
+			status = redir_out(redir);
 		else if (redir->type == REDIR_APPEND)
-		{
-			if (redir_append(redir))
-				return (1);
-		}
+			status = redir_append(redir);
 		else if (redir->type == HEREDOC)
-		{
-			if (handle_heredoc(redir))
-				return (1);
-		}
+			status = redir_heredoc(redir);
+		if (status != 0)
+			return (-1);
 		redir = redir->next;
 	}
 	return (0);

@@ -1,89 +1,109 @@
 #include "parse.h"
 
-int find_argv_num(t_tokens *tmp)
+static int	is_redir(t_token_type type)
 {
-    int argv_num;
-
-    argv_num = 0;
-    while(tmp && tmp->type != PIPE)
-    {
-        if(!tmp->prev || (tmp->prev && (tmp->prev->type == WORD || tmp->prev->type == PIPE)))
-            argv_num++;
-        tmp = tmp->next;
-    }
-    return (argv_num);
+	return (type == REDIR_IN
+		|| type == REDIR_OUT
+		|| type == REDIR_APPEND
+		|| type == HEREDOC);
 }
 
-void    find_argv(t_cmds **cmd, t_tokens *tmp)
+static int	should_be_argv(t_tokens *tmp)
 {
-    int i;
-    int argv_num;
-
-    i = 0;
-    argv_num = find_argv_num(tmp);
-    (*cmd)->argv = malloc((argv_num + 1) * sizeof(char *));
-    if(!((*cmd)->argv))
-        return ;
-    while(tmp && tmp->type != PIPE)
-    {
-        if(tmp->type == WORD && i < argv_num)
-        {
-            if(!tmp->prev || (tmp->prev && (tmp->prev->type == WORD || tmp->prev->type == PIPE)))
-            {
-                (*cmd)->argv[i] = ft_strdup(tmp->value);
-                i++;
-            }
-        }
-        tmp = tmp->next;
-    }
-    (*cmd)->argv[i] = NULL;
+	if (!tmp || tmp->type != WORD)
+		return (0);
+	if (tmp->prev && is_redir(tmp->prev->type))
+		return (0);
+	return (1);
 }
 
-
-t_cmds    *create_cmd_list(t_tokens *tmp)
+static int	find_argv_num(t_tokens *tmp)
 {
-    t_cmds  *cmd;
+	int	argv_num;
 
-    cmd = malloc(sizeof(t_cmds));
-    if(!cmd)
-        return (NULL);
-
-    find_redirs(&cmd, tmp);
-    find_argv(&cmd,  tmp);
-
-    cmd->in_fd = STDIN_FILENO;
-    cmd->out_fd =STDOUT_FILENO;
-
-    while (tmp && tmp->type != PIPE)
+	argv_num = 0;
+	while (tmp && tmp->type != PIPE)
+	{
+		if (should_be_argv(tmp))
+			argv_num++;
 		tmp = tmp->next;
-    if(tmp && tmp->type == PIPE && tmp->next)
-    {
-        tmp = tmp->next;
-        cmd->next = create_cmd_list(tmp);
-    }
-    else 
-        cmd->next = NULL;
-    return (cmd);
+	}
+	return (argv_num);
 }
 
-void    free_cmd_list(t_cmds **cmd_list)
+static int	find_argv(t_cmds **cmd, t_tokens *tmp)
 {
-    t_cmds  *tmp;
-    int i;
+	int	i;
+	int	argv_num;
 
-    tmp = *cmd_list;
-    while(tmp)
-    {
-        i = 0;
-        free_redirs(&(tmp->redirs));
-        while(tmp->argv[i])
-        {
-            free(tmp->argv[i]);
-            i++;
-        }
-        free(tmp->argv);
-        *cmd_list = tmp->next;
-        free(tmp);
-        tmp = *cmd_list;
-    }
+	i = 0;
+	argv_num = find_argv_num(tmp);
+	(*cmd)->argv = malloc(sizeof(char *) * (argv_num + 1));
+	if (!(*cmd)->argv)
+		return (1);
+	while (tmp && tmp->type != PIPE)
+	{
+		if (should_be_argv(tmp))
+		{
+			(*cmd)->argv[i] = ft_strdup(tmp->value);
+			if (!(*cmd)->argv[i])
+				return (1);
+			i++;
+		}
+		tmp = tmp->next;
+	}
+	(*cmd)->argv[i] = NULL;
+	return (0);
+}
+
+t_cmds	*create_cmd_list(t_tokens *tmp)
+{
+	t_cmds		*cmd;
+	t_tokens	*pipe_ptr;
+
+	cmd = malloc(sizeof(t_cmds));
+	if (!cmd)
+		return (NULL);
+	cmd->argv = NULL;
+	cmd->redirs = NULL;
+	cmd->in_fd = STDIN_FILENO;
+	cmd->out_fd = STDOUT_FILENO;
+	cmd->next = NULL;
+	find_redirs(&cmd, tmp);
+	if (find_argv(&cmd, tmp))
+	{
+		free_redirs(&cmd->redirs);
+		free(cmd);
+		return (NULL);
+	}
+	pipe_ptr = tmp;
+	while (pipe_ptr && pipe_ptr->type != PIPE)
+		pipe_ptr = pipe_ptr->next;
+	if (pipe_ptr && pipe_ptr->next)
+		cmd->next = create_cmd_list(pipe_ptr->next);
+	return (cmd);
+}
+
+void	free_cmd_list(t_cmds **cmd_list)
+{
+	t_cmds	*tmp;
+	int		i;
+
+	while (*cmd_list)
+	{
+		tmp = *cmd_list;
+		i = 0;
+		free_redirs(&(tmp->redirs));
+		if (tmp->argv)
+		{
+			while (tmp->argv[i])
+			{
+				free(tmp->argv[i]);
+				i++;
+			}
+			free(tmp->argv);
+		}
+		*cmd_list = tmp->next;
+		free(tmp);
+	}
 }
