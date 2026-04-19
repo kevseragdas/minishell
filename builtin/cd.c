@@ -60,7 +60,7 @@ int cd_builtin(t_cmds *cmd, t_envp **env)
 
     if(!cmd->argv[1] || cmd->argv[2])
     {
-        print_error("cd: invalid number of arguments\n");
+        print_error("cd: too many arguments\n");
         return (1);
     }
     if(getcwd(cwd1, sizeof(cwd1)) == NULL)
@@ -70,7 +70,7 @@ int cd_builtin(t_cmds *cmd, t_envp **env)
     }
     if(chdir(cmd->argv[1]) != 0)
     {
-        print_error("cd: no such file or directory\n");
+        print_error("cd: No such file or directory\n");
         return (1);
     }
     if(getcwd(cwd2, sizeof(cwd2)) == NULL)

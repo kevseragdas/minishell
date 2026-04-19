@@ -1,53 +1,69 @@
 #include "builtin.h"
 
-//parent ve child ayrımını execution aşamasında handle etmen gerekiyor.
-
-int check_exit_status(char *str, int is_parent, int *control)
+static int	is_numeric_arg(char *str)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while(str[i])
-    {
-        if(!ft_isdigit(str[i]))
-        {
-            if (is_parent)
-            {
-                write(2, "exit\n", 5);
-                write(2, "minishell: exit: ", 17);
-                write(2, str, ft_strlen(str));
-                write(2, ": numeric argument required\n", 28);
-                *control = 1;
-            }
-            return (255);
-        }
-        i++;
-    }
-    return (0);
+	if (!str || !str[0])
+		return (0);
+	i = 0;
+	if (str[i] == '+' || str[i] == '-')
+		i++;
+	if (!str[i])
+		return (0);
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-int exit_builtin(t_cmds **cmd, t_envp **env, int is_parent)
+static void	print_exit_numeric_error(char *arg)
 {
-    int status;
-    int i;
-    int control;
+	write(2, "minishell: exit: ", 17);
+	write(2, arg, ft_strlen(arg));
+	write(2, ": numeric argument required\n", 28);
+}
 
-    control = 0;
-    status = 0;
-    i = 0;
-    if((*cmd)->argv[1])
-    {
-        status = check_exit_status((*cmd)->argv[1], is_parent, &control);
-        if(status != 255)
-            status = ft_atoi((*cmd)->argv[1]) % 256;
-    }
-    if (is_parent)
-    {
-        if(!control)
-            write(2, "exit\n", 5);
-        free_cmd_list(cmd);
-        free_envp_list(env);
-        exit(status);
-    }
-    return status;
+int	exit_builtin(t_cmds **cmd, t_envp **env, int is_parent)
+{
+	long	status;
+
+	if (!(*cmd)->argv[1])
+	{
+		if (is_parent)
+		{
+			free_cmd_list(cmd);
+			free_envp_list(env);
+			exit(0);
+		}
+		return (0);
+	}
+	if (!is_numeric_arg((*cmd)->argv[1]))
+	{
+		print_exit_numeric_error((*cmd)->argv[1]);
+		if (is_parent)
+		{
+			free_cmd_list(cmd);
+			free_envp_list(env);
+			exit(2);
+		}
+		return (2);
+	}
+	if ((*cmd)->argv[2])
+	{
+		write(2, "minishell: exit: too many arguments\n", 36);
+		return (1);
+	}
+	status = ft_atol((*cmd)->argv[1]);
+	status = (unsigned char)status;
+	if (is_parent)
+	{
+		free_cmd_list(cmd);
+		free_envp_list(env);
+		exit((int)status);
+	}
+	return ((int)status);
 }

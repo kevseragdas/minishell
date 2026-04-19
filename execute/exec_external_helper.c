@@ -20,7 +20,12 @@ void	print_command_error(const char *cmd, int error_type)
 	write(2, "minishell: ", 11);
 	write(2, cmd, ft_strlen(cmd));
 	if (error_type == 127)
-		write(2, ": command not found\n", 20);
+	{
+		if (ft_strchr(cmd, '/'))
+			write(2, ": No such file or directory\n", 28);
+		else
+			write(2, ": command not found\n", 20);
+	}
 	else if (error_type == 126)
 		write(2, ": Permission denied\n", 20);
 }

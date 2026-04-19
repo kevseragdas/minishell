@@ -22,6 +22,7 @@ static int	run_parent(t_cmds **cmd, t_envp **env)
 		return (1);
 	}
 	status = exec_builtin(cmd, env, 1);
+	fflush(stdout);
 	dup2(backup_stdin, STDIN_FILENO);
 	dup2(backup_stdout, STDOUT_FILENO);
 	close(backup_stdin);

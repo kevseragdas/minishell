@@ -14,6 +14,8 @@ static int	should_be_argv(t_tokens *tmp)
 		return (0);
 	if (tmp->prev && is_redir(tmp->prev->type))
 		return (0);
+	if (tmp->value[0] == '\0')
+		return (0);
 	return (1);
 }
 

@@ -2,7 +2,7 @@ NAME = builtin.a
 CFLAGS =
 
 SRCS = builtin_functions.c get_envp.c pwd.c echo.c env.c exit.c cd.c unset.c \
-		export.c export_helper.c expander.c get_arr_env.c
+		export.c export_helper.c expander.c get_arr_env.c ft_atol.c
 
 OBJS = $(SRCS:.c=.o)
 

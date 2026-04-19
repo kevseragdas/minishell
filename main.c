@@ -24,8 +24,12 @@ int	main(int ac, char **av, char **envp)
 				printf("exit\n");
 			break ;
 		}
-		if (input[0] != '\0')
-			add_history(input);
+		if (input[0] == '\0')
+		{
+			free(input);
+			continue ;
+		}
+		add_history(input);
 		tokens = lexer(input);
 		free(input);
 		if (!tokens)

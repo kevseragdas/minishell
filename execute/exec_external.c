@@ -1,5 +1,33 @@
 #include "execute.h"
 
+static void	handle_enoexec(char *path, char **argv, char **arr_env)
+{
+	int		i;
+	char	**new_argv;
+
+	i = 0;
+	while (argv[i])
+		i++;
+	new_argv = malloc(sizeof(char *) * (i + 2));
+	if (!new_argv)
+	{
+		free(path);
+		free_2d_arr(arr_env);
+		exit(1);
+	}
+	new_argv[0] = "/bin/sh";
+	new_argv[1] = path;
+	i = 1;
+	while (argv[i])
+	{
+		new_argv[i + 1] = argv[i];
+		i++;
+	}
+	new_argv[i + 1] = NULL;
+	execve("/bin/sh", new_argv, arr_env);
+	free(new_argv);
+}
+
 int	is_directory(char *path)
 {
 	struct stat	st;
@@ -53,6 +81,8 @@ int	exec_external(t_cmds *cmd, t_envp *env)
 	}
 	arr_env = get_arr_env(env);
 	execve(path, cmd->argv, arr_env);
+	if (errno == ENOEXEC)
+		handle_enoexec(path, cmd->argv, arr_env);
 	free(path);
 	free_2d_arr(arr_env);
 	errno_handler();
