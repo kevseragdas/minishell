@@ -28,7 +28,9 @@ typedef struct s_tokens
 typedef struct s_envp	t_envp;
 
 void		free_token_list(t_tokens **tokens);
+void		quote_check(char c, char	*quote);
 int			check_token_syntax(t_tokens **token);
+int			is_sep(char c);
 t_tokens	*lexer(char *input);
 
 typedef struct s_redirs
@@ -43,8 +45,6 @@ typedef struct s_cmds
 {
 	char			**argv;
 	t_redirs		*redirs;
-	int				in_fd;
-	int				out_fd;
 	struct s_cmds	*next;
 }	t_cmds;
 
@@ -52,8 +52,6 @@ void		find_redirs(t_cmds **cmd, t_tokens *tmp);
 void		free_redirs(t_redirs **redir);
 void		free_cmd_list(t_cmds **cmd_list);
 t_cmds		*create_cmd_list(t_tokens *tmp);
-
-/* expander */
 void		expand_tokens(t_tokens *tokens, t_envp *env, int last_status);
 
 #endif

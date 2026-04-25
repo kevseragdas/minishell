@@ -68,8 +68,6 @@ t_cmds	*create_cmd_list(t_tokens *tmp)
 		return (NULL);
 	cmd->argv = NULL;
 	cmd->redirs = NULL;
-	cmd->in_fd = STDIN_FILENO;
-	cmd->out_fd = STDOUT_FILENO;
 	cmd->next = NULL;
 	find_redirs(&cmd, tmp);
 	if (find_argv(&cmd, tmp))
@@ -84,28 +82,4 @@ t_cmds	*create_cmd_list(t_tokens *tmp)
 	if (pipe_ptr && pipe_ptr->next)
 		cmd->next = create_cmd_list(pipe_ptr->next);
 	return (cmd);
-}
-
-void	free_cmd_list(t_cmds **cmd_list)
-{
-	t_cmds	*tmp;
-	int		i;
-
-	while (*cmd_list)
-	{
-		tmp = *cmd_list;
-		i = 0;
-		free_redirs(&(tmp->redirs));
-		if (tmp->argv)
-		{
-			while (tmp->argv[i])
-			{
-				free(tmp->argv[i]);
-				i++;
-			}
-			free(tmp->argv);
-		}
-		*cmd_list = tmp->next;
-		free(tmp);
-	}
 }

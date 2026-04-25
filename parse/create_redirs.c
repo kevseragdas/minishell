@@ -1,6 +1,4 @@
 #include "parse.h"
-#include <unistd.h>
-#include <stdlib.h>
 
 static int	is_redir(t_token_type type)
 {
@@ -10,34 +8,44 @@ static int	is_redir(t_token_type type)
 		|| type == HEREDOC);
 }
 
+static t_redirs	*create_redirection(t_token_type type, char *target)
+{
+	t_redirs	*new;
+
+	new = malloc(sizeof(t_redirs));
+	if (!new)
+		return (NULL);
+	new->type = type;
+	new->target = ft_strdup(target);
+	new->fd = -1;
+	new->next = NULL;
+	return (new);
+}
+
 void	find_redirs(t_cmds **cmd, t_tokens *tmp)
 {
-	t_redirs	*new_rdr;
-	t_redirs	*curr_rdr;
-	t_redirs	*head_rdr;
+	t_redirs	*new;
+	t_redirs	*curr;
+	t_redirs	*head;
 
-	head_rdr = NULL;
-	curr_rdr = NULL;
+	head = NULL;
+	curr = NULL;
 	while (tmp && tmp->type != PIPE)
 	{
 		if (is_redir(tmp->type) && tmp->next && tmp->next->type == WORD)
 		{
-			new_rdr = malloc(sizeof(t_redirs));
-			if (!new_rdr)
+			new = create_redirection(tmp->type, tmp->next->value);
+			if (!new)
 				return ;
-			new_rdr->type = tmp->type;
-			new_rdr->target = ft_strdup(tmp->next->value);
-			new_rdr->fd = -1;
-			new_rdr->next = NULL;
-			if (!head_rdr)
-				head_rdr = new_rdr;
+			if (!head)
+				head = new;
 			else
-				curr_rdr->next = new_rdr;
-			curr_rdr = new_rdr;
+				curr->next = new;
+			curr = new;
 		}
 		tmp = tmp->next;
 	}
-	(*cmd)->redirs = head_rdr;
+	(*cmd)->redirs = head;
 }
 
 void	free_redirs(t_redirs **redir)

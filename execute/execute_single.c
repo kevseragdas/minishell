@@ -9,10 +9,7 @@ static int	run_parent(t_cmds **cmd, t_envp **env)
 	backup_stdin = dup(STDIN_FILENO);
 	backup_stdout = dup(STDOUT_FILENO);
 	if (backup_stdin < 0 || backup_stdout < 0)
-	{
-		perror("dup");
-		return (1);
-	}
+		return (perror("dup"), 1);
 	if (redirections(*cmd) < 0)
 	{
 		dup2(backup_stdin, STDIN_FILENO);

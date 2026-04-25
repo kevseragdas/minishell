@@ -1,42 +1,26 @@
 #include "parse.h"
 
-static int	is_sep(char c)
-{
-	return (c == ' ' || c == '\t' || c == '<' || c == '>' || c == '|');
-}
-
-static void	quote_check(char c, char *quote)
-{
-	if (*quote == 0 && (c == '\'' || c == '"'))
-		*quote = c;
-	else if (*quote == c)
-		*quote = 0;
-}
-
 static int	add_token(t_tokens **head, char *value, t_token_type type)
 {
-	t_tokens	*new_node;
-	t_tokens	*temp;
+	t_tokens	*new;
+	t_tokens	*tmp;
 
-	new_node = malloc(sizeof(t_tokens));
-	if (!new_node)
-	{
-		free(value);
-		return (1);
-	}
-	new_node->value = value;
-	new_node->type = type;
-	new_node->next = NULL;
-	new_node->prev = NULL;
-	if (*head == NULL)
-		*head = new_node;
+	new = malloc(sizeof(t_tokens));
+	if (!new)
+		return (free(value), 1);
+	new->value = value;
+	new->type = type;
+	new->next = NULL;
+	new->prev = NULL;
+	if (!*head)
+		*head = new;
 	else
 	{
-		temp = *head;
-		while (temp->next != NULL)
-			temp = temp->next;
-		temp->next = new_node;
-		new_node->prev = temp;
+		tmp = *head;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = new;
+		new->prev = tmp;
 	}
 	return (0);
 }
@@ -59,45 +43,46 @@ static int	handle_word(char *s, int *i, t_tokens **head)
 	if (quote != 0)
 		return (0);
 	word = ft_substr(s, start, *i - start);
-	if (!word)
-		return (0);
-	if (add_token(head, word, WORD))
+	if (!word || add_token(head, word, WORD))
 		return (0);
 	return (1);
 }
 
-static int	handle_operator(char *s, int *i, t_tokens **head)
+static int	handle_double_op(char *s, int *i, t_tokens **head)
 {
 	if (s[*i] == '<' && s[*i + 1] == '<')
 	{
 		if (add_token(head, ft_strdup("<<"), HEREDOC))
 			return (1);
 		(*i) += 2;
+		return (1);
 	}
-	else if (s[*i] == '>' && s[*i + 1] == '>')
+	if (s[*i] == '>' && s[*i + 1] == '>')
 	{
 		if (add_token(head, ft_strdup(">>"), REDIR_APPEND))
 			return (1);
 		(*i) += 2;
+		return (1);
 	}
-	else if (s[*i] == '|')
-	{
-		if (add_token(head, ft_strdup("|"), PIPE))
-			return (1);
-		(*i)++;
-	}
+	return (0);
+}
+
+static int	handle_operator(char *s, int *i, t_tokens **head)
+{
+	int	is_double;
+
+	is_double = handle_double_op(s, i, head);
+	if (is_double)
+		return (0);
+	if (s[*i] == '|')
+		is_double = add_token(head, ft_strdup("|"), PIPE);
 	else if (s[*i] == '<')
-	{
-		if (add_token(head, ft_strdup("<"), REDIR_IN))
-			return (1);
-		(*i)++;
-	}
+		is_double = add_token(head, ft_strdup("<"), REDIR_IN);
 	else if (s[*i] == '>')
-	{
-		if (add_token(head, ft_strdup(">"), REDIR_OUT))
-			return (1);
-		(*i)++;
-	}
+		is_double = add_token(head, ft_strdup(">"), REDIR_OUT);
+	if (is_double)
+		return (1);
+	(*i)++;
 	return (0);
 }
 
@@ -117,19 +102,12 @@ t_tokens	*lexer(char *input)
 		if (input[i] == '|' || input[i] == '<' || input[i] == '>')
 		{
 			if (handle_operator(input, &i, &head))
-			{
-				free_token_list(&head);
-				return (NULL);
-			}
+				return (free_token_list(&head), NULL);
 		}
-		else
+		else if (!handle_word(input, &i, &head))
 		{
-			if (!handle_word(input, &i, &head))
-			{
-				write(2, "minishell: unclosed quotes\n", 27);
-				free_token_list(&head);
-				return (NULL);
-			}
+			write(2, "minishell: unclosed quotes\n", 27);
+			return (free_token_list(&head), NULL);
 		}
 	}
 	return (head);

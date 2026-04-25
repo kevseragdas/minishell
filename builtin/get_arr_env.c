@@ -2,15 +2,13 @@
 
 static int	env_count(t_envp *env)
 {
-	int		count;
-	t_envp	*tmp;
+	int	count;
 
 	count = 0;
-	tmp = env;
-	while (tmp)
+	while (env)
 	{
 		count++;
-		tmp = tmp->next;
+		env = env->next;
 	}
 	return (count);
 }
@@ -20,18 +18,8 @@ char	**get_arr_env(t_envp *env)
 	char	**arr;
 	char	*tmp_str;
 	int		i;
-	int		count;
-	t_envp	*tmp;
 
-	count = 0;
-	tmp = env;
-	while (tmp)
-	{
-		if (tmp->value != NULL)
-			count++;
-		tmp = tmp->next;
-	}
-	arr = malloc(sizeof(char *) * (count + 1));
+	arr = malloc(sizeof(char *) * (env_count(env) + 1));
 	if (!arr)
 		return (NULL);
 	i = 0;

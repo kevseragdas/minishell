@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFLAGS = -g
+CFLAGS = -Wall -Wextra -Werror
 LIBS = -lreadline
 
 LIBFT_DIR = ./libft

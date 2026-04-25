@@ -31,18 +31,10 @@ int	handle_heredoc(t_redirs *redir)
 	if (!redir || !redir->target)
 		return (-1);
 	if (pipe(fd) < 0)
-	{
-		perror("pipe");
-		return (-1);
-	}
+		return (perror("pipe"), -1);
 	pid = fork();
 	if (pid < 0)
-	{
-		perror("fork");
-		close(fd[0]);
-		close(fd[1]);
-		return (-1);
-	}
+		return (perror("fork"), close(fd[0]), close(fd[1]), -1);
 	if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
@@ -53,11 +45,7 @@ int	handle_heredoc(t_redirs *redir)
 	close(fd[1]);
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-	{
-		close(fd[0]);
-		write(1, "\n", 1);
-		return (-1);
-	}
+		return (close(fd[0]), write(1, "\n", 1), -1);
 	redir->fd = fd[0];
 	return (0);
 }

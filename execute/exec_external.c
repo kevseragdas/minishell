@@ -28,33 +28,27 @@ static void	handle_enoexec(char *path, char **argv, char **arr_env)
 	free(new_argv);
 }
 
-int	is_directory(char *path)
+static void	check_dir_and_exit(char *path)
 {
 	struct stat	st;
 
-	if (stat(path, &st) == -1)
-		return (0);
-	return (S_ISDIR(st.st_mode));
+	if (stat(path, &st) != -1 && S_ISDIR(st.st_mode))
+	{
+		write(2, "minishell: ", 11);
+		write(2, path, ft_strlen(path));
+		write(2, ": Is a directory\n", 17);
+		free(path);
+		exit(126);
+	}
 }
 
-void	errno_handler(void)
+static void	errno_handler(void)
 {
-	if (errno == EACCES)
-	{
-		perror("minishell");
-		exit(126);
-	}
-	else if (errno == ENOENT)
-	{
-		perror("minishell");
-		exit(127);
-	}
-	else if (errno == EISDIR)
-	{
-		perror("minishell");
-		exit(126);
-	}
 	perror("minishell");
+	if (errno == EACCES || errno == EISDIR)
+		exit(126);
+	if (errno == ENOENT)
+		exit(127);
 	exit(1);
 }
 
@@ -71,14 +65,7 @@ int	exec_external(t_cmds *cmd, t_envp *env)
 		print_command_error(cmd->argv[0], status);
 		exit(status);
 	}
-	if (is_directory(path))
-	{
-		write(2, "minishell: ", 11);
-		write(2, path, ft_strlen(path));
-		write(2, ": Is a directory\n", 17);
-		free(path);
-		exit(126);
-	}
+	check_dir_and_exit(path);
 	arr_env = get_arr_env(env);
 	execve(path, cmd->argv, arr_env);
 	if (errno == ENOEXEC)
