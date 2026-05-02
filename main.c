@@ -37,6 +37,11 @@ int	main(int ac, char **av, char **envp)
 	while (1)
 	{
 		input = readline("minishell$ ");
+		if (g_signal == SIGINT)
+		{
+			last_status = 130;
+			g_signal = 0;
+		}
 		if (!input)
 			break ;
 		if (input[0] != '\0')

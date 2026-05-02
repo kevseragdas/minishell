@@ -3,12 +3,22 @@
 static void	read_heredoc(char *delimiter, int write_fd)
 {
 	char	*line;
+	int		line_count;
 
+	line_count = 1;
 	while (1)
 	{
 		line = readline("> ");
+		line_count++;
 		if (!line)
+		{
+			ft_putstr_fd("minishell: warning: here-document at line ", 2);
+			ft_putnbr_fd(line_count, 2);
+			ft_putstr_fd(" delimited by end-of-file (wanted `", 2);
+			ft_putstr_fd(delimiter, 2);
+			ft_putstr_fd("')\n", 2);
 			break ;
+		}
 		if (ft_strcmp(line, delimiter) == 0)
 		{
 			free(line);
@@ -37,15 +47,19 @@ int	handle_heredoc(t_redirs *redir)
 		return (perror("fork"), close(fd[0]), close(fd[1]), -1);
 	if (pid == 0)
 	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_IGN);
+		set_signals_heredoc();
 		close(fd[0]);
 		read_heredoc(redir->target, fd[1]);
 	}
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	close(fd[1]);
 	waitpid(pid, &status, 0);
+	set_signals_interactive();
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
+		return (close(fd[0]), -1);
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-		return (close(fd[0]), write(1, "\n", 1), -1);
+		return (close(fd[0]), -1);
 	redir->fd = fd[0];
 	return (0);
 }

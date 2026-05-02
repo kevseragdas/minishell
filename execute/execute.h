@@ -29,5 +29,6 @@ int		handle_heredoc(t_redirs *redir);
 void	set_signals_interactive(void);
 void	set_signals_executing(void);
 int		prepare_heredocs(t_cmds *cmd);
+void	set_signals_heredoc(void);
 
 #endif

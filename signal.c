@@ -1,8 +1,10 @@
 #include "minishell.h"
 
+volatile sig_atomic_t g_signal = 0;
+
 static void	handle_sigint_interactive(int sig)
 {
-	(void)sig;
+	g_signal = sig;
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
