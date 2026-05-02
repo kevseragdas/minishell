@@ -13,8 +13,6 @@ static void	update_parent_fds(t_cmds *cmd, int *prev_fd, int fd[2])
 static void	update_status_from_wait(pid_t pid, pid_t last_pid,
 	int status, int *last_status)
 {
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGPIPE)
-		write(2, " Broken pipe\n", 13);
 	if (pid != last_pid)
 		return ;
 	if (WIFEXITED(status))
