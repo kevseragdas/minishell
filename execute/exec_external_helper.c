@@ -15,7 +15,8 @@ void	free_2d_arr(char **arr)
 	free(arr);
 }
 
-void	print_command_error(const char *cmd, int error_type)
+//void	print_command_error(const char *cmd, int error_type);
+void	print_command_error(t_cmds **cmds, t_envp **env, char *cmd, int error_type)
 {
 	write(2, "minishell: ", 11);
 	write(2, cmd, ft_strlen(cmd));
@@ -28,6 +29,8 @@ void	print_command_error(const char *cmd, int error_type)
 	}
 	else if (error_type == 126)
 		write(2, ": Permission denied\n", 20);
+	free_cmd_list(cmds);
+	free_envp_list(env);
 }
 
 static int	check_absolute_path(char *cmd, char **path)

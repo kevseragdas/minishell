@@ -7,6 +7,6 @@ int	execute(t_cmds **cmd, t_envp **env)
 	if (prepare_heredocs(*cmd) < 0)
 		return (130);
 	if ((*cmd)->next)
-		return (execute_non_single(*cmd, env));
+		return (execute_non_single(cmd, env));
 	return (execute_single(cmd, env));
 }

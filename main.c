@@ -19,6 +19,7 @@ static int	handle_input(char *input, t_envp **my_env, int *last_status)
 		return (1);
 	*last_status = execute(&cmd, my_env);
 	free_cmd_list(&cmd);
+	//free_envp_list(my_env); // buraya free atinca env ler yokoluyor
 	return (*last_status);
 }
 
@@ -51,7 +52,8 @@ int	main(int ac, char **av, char **envp)
 		}
 		free(input);
 	}
+	free_envp_list(&my_env);
 	if (isatty(STDIN_FILENO))
 		printf("exit\n");
-	return (free_envp_list(&my_env), last_status);
+	return (last_status);
 }

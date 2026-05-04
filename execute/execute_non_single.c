@@ -37,28 +37,33 @@ static int	wait_all_children(pid_t last_pid)
 	return (last_status);
 }
 
-int	execute_non_single(t_cmds *cmd, t_envp **env)
+int	execute_non_single(t_cmds **cmd, t_envp **env)
 {
 	int		fd[2];
 	int		prev_fd;
 	pid_t	pid;
 	pid_t	last_pid;
+	t_cmds *tmp;
 
+	tmp = *cmd;
 	prev_fd = STDIN_FILENO;
 	last_pid = -1;
-	while (cmd)
+	while (tmp)
 	{
-		if (cmd->next && pipe(fd) < 0)
+		if (tmp->next && pipe(fd) < 0)
 		{
 			perror("pipe");
 			return (1);
 		}
-		pid = create_child(cmd, env, prev_fd, fd);
+		//free_envp_list(env); /////////////////test
+		pid = create_child(&tmp, env, prev_fd, fd);
 		if (pid < 0)
 			return (1);
-		update_parent_fds(cmd, &prev_fd, fd);
+		update_parent_fds(tmp, &prev_fd, fd);
 		last_pid = pid;
-		cmd = cmd->next;
+		tmp = tmp->next;
 	}
+	//free_cmd_list(cmd);
+	//free_envp_list(env); // bunu koyarsam env leri komple göremiyorum
 	return (wait_all_children(last_pid));
 }

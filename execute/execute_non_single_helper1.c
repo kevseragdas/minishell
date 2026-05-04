@@ -38,18 +38,28 @@ static int	is_env_modifying_builtin(char *name)
 	return (0);
 }
 
-void	run_builtin_in_child(t_cmds *cmd, t_envp **env)
+//void	run_builtin_in_child(t_cmds *cmd, t_envp **env)
+void	run_builtin_in_child(t_cmds **cmd, t_envp **env)
 {
-	t_envp	*tmp_env;
+	//t_envp	*tmp_env;
 	int		status;
 
-	if (!is_env_modifying_builtin(cmd->argv[0]))
-		exit(exec_builtin(&cmd, env, 0));
-	tmp_env = clone_env_list(*env);
-	if (!tmp_env)
-		exit(1);
-	status = exec_builtin(&cmd, &tmp_env, 0);
-	free_envp_list(&tmp_env);
+	if (!is_env_modifying_builtin((*cmd)->argv[0]))
+	{
+		status = exec_builtin(cmd, env, 0);
+		free_envp_list(env);
+		free_cmd_list(cmd);
+		exit(status);
+	}
+		
+	//tmp_env = clone_env_list(*env);
+	//if (!tmp_env)
+	//	exit(1);
+	//status = exec_builtin(cmd, &tmp_env, 0);
+	status = exec_builtin(cmd, env, 0);
+	free_cmd_list(cmd);
+	free_envp_list(env);
+	//free_envp_list(&tmp_env);
 	exit(status);
 }
 

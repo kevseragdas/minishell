@@ -19,6 +19,7 @@ static int	run_parent(t_cmds **cmd, t_envp **env)
 		return (1);
 	}
 	status = exec_builtin(cmd, env, 1);
+	//free_envp_list(env);
 	fflush(stdout);
 	dup2(backup_stdin, STDIN_FILENO);
 	dup2(backup_stdout, STDOUT_FILENO);
@@ -42,7 +43,7 @@ static int	run_child(t_cmds **cmd, t_envp **env)
 	{
 		if (redirections(*cmd) < 0)
 			exit(1);
-		exec_external(*cmd, *env);
+		exec_external(cmd, env);
 		exit(1);
 	}
 	waitpid(pid, &status, 0);
