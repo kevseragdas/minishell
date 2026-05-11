@@ -25,7 +25,7 @@ void	print_sorted_envs(t_envp **env);
 int		is_builtin(char *cmd);
 int		pwd_builtin(void);
 int		echo_builtin(t_cmds *cmd);
-int		env_builtin(t_cmds *cmd, t_envp *env_list);
+int		env_builtin(t_cmds **cmd, t_envp **env_list);
 int		exit_builtin(t_cmds **cmd, t_envp **env, int is_parent);
 int		cd_builtin(t_cmds *cmd, t_envp **env);
 int		unset_builtin(t_cmds *cmd, t_envp **env);

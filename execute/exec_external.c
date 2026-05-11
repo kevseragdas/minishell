@@ -28,7 +28,8 @@ static void	handle_enoexec(char *path, char **argv, char **arr_env)
 	free(new_argv);
 }
 
-static void	check_dir_and_exit(char *path)
+//static void	check_dir_and_exit(char *path)
+static void	check_dir_and_exit(char *path, t_cmds **cmd, t_envp **env)
 {
 	struct stat	st;
 
@@ -38,6 +39,8 @@ static void	check_dir_and_exit(char *path)
 		write(2, path, ft_strlen(path));
 		write(2, ": Is a directory\n", 17);
 		free(path);
+		free_cmd_list(cmd);
+		free_envp_list(env);
 		exit(126);
 	}
 }
@@ -65,7 +68,7 @@ int	exec_external(t_cmds **cmd, t_envp **env)
 		print_command_error(cmd, env, (*cmd)->argv[0], status);
 		exit(status);
 	}
-	check_dir_and_exit(path);
+	check_dir_and_exit(path, cmd, env);
 	arr_env = get_arr_env(*env);
 	execve(path, (*cmd)->argv, arr_env);
 	if (errno == ENOEXEC)

@@ -47,7 +47,7 @@ int	exit_builtin(t_cmds **cmd, t_envp **env, int is_parent)
 	if (!is_numeric_arg((*cmd)->argv[1]))
 	{
 		print_exit_numeric_error((*cmd)->argv[1]);
-		return (clean_and_exit(cmd, env, is_parent, 2));
+		return (clean_and_exit(cmd, env, is_parent, 255));
 	}
 	if ((*cmd)->argv[2])
 	{

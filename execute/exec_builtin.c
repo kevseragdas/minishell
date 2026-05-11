@@ -15,7 +15,7 @@ int	exec_builtin(t_cmds **cmd, t_envp **env, int is_parent)
 	else if (!ft_strcmp((*cmd)->argv[0], "unset"))
 		return (unset_builtin(*cmd, env));
 	else if (!ft_strcmp((*cmd)->argv[0], "env"))
-		return (env_builtin(*cmd, *env), 0);
+		return (env_builtin(cmd, env), 0);
 	else if (!ft_strcmp((*cmd)->argv[0], "exit"))
 		return (exit_builtin(cmd, env, is_parent));
 	return (0);

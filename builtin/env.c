@@ -1,17 +1,20 @@
 #include "builtin.h"
 
-int	env_builtin(t_cmds *cmd, t_envp *env_list)
+//int	env_builtin(t_cmds *cmd, t_envp *env_list)
+int	env_builtin(t_cmds **cmd, t_envp **env_list)
 {
 	t_envp	*tmp;
 
-	if (cmd->argv[1])
+	if ((*cmd)->argv[1])
 	{
 		write(2, "env: ", 5);
-		write(2, cmd->argv[1], ft_strlen(cmd->argv[1]));
+		write(2, (*cmd)->argv[1], ft_strlen((*cmd)->argv[1]));
 		write(2, ": No such file or directory\n", 28);
+		free_envp_list(env_list);
+		free_cmd_list(cmd);
 		return (127);
 	}
-	tmp = env_list;
+	tmp = *env_list;
 	while (tmp)
 	{
 		if (tmp->key && tmp->value)

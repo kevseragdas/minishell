@@ -16,11 +16,13 @@ static int	run_parent(t_cmds **cmd, t_envp **env)
 		dup2(backup_stdout, STDOUT_FILENO);
 		close(backup_stdin);
 		close(backup_stdout);
+		//free_cmd_list(cmd);///
+		//free_envp_list(env);///  bunlardan dolayı da değil gibi
 		return (1);
 	}
 	status = exec_builtin(cmd, env, 1);
 	//free_envp_list(env);
-	fflush(stdout);
+	//fflush(stdout); //////??????????????
 	dup2(backup_stdin, STDIN_FILENO);
 	dup2(backup_stdout, STDOUT_FILENO);
 	close(backup_stdin);
@@ -42,7 +44,12 @@ static int	run_child(t_cmds **cmd, t_envp **env)
 	else if (pid == 0)
 	{
 		if (redirections(*cmd) < 0)
+		{
+			free_envp_list(env);//
+			free_cmd_list(cmd);// buldukkkk 
 			exit(1);
+		}
+			
 		exec_external(cmd, env);
 		exit(1);
 	}

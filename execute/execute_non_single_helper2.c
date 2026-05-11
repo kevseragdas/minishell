@@ -8,7 +8,12 @@ static void	child_process(t_cmds **cmd, t_envp **env, int prev_fd, int fd[2])
 	setup_pipe_input(prev_fd);
 	setup_pipe_output(*cmd, fd);
 	if (redirections(*cmd) < 0)
+	{
+		free_envp_list(env);//
+		free_cmd_list(cmd);//buldukk
 		exit(1);
+	}
+		
 	if ((*cmd)->argv && (*cmd)->argv[0] && is_builtin((*cmd)->argv[0]))
 	{
 		run_builtin_in_child(cmd, env);

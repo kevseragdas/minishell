@@ -1,31 +1,31 @@
 #include "execute.h"
 
-static t_envp	*clone_env_list(t_envp *env)
-{
-	t_envp	*head;
-	t_envp	*tail;
-	t_envp	*new;
+// static t_envp	*clone_env_list(t_envp *env)
+// {
+// 	t_envp	*head;
+// 	t_envp	*tail;
+// 	t_envp	*new;
 
-	head = NULL;
-	while (env)
-	{
-		new = malloc(sizeof(t_envp));
-		if (!new)
-			return (free_envp_list(&head), NULL);
-		new->key = ft_strdup(env->key);
-		new->value = NULL;
-		if (env->value)
-			new->value = ft_strdup(env->value);
-		new->next = NULL;
-		if (!head)
-			head = new;
-		else
-			tail->next = new;
-		tail = new;
-		env = env->next;
-	}
-	return (head);
-}
+// 	head = NULL;
+// 	while (env)
+// 	{
+// 		new = malloc(sizeof(t_envp));
+// 		if (!new)
+// 			return (free_envp_list(&head), NULL);
+// 		new->key = ft_strdup(env->key);
+// 		new->value = NULL;
+// 		if (env->value)
+// 			new->value = ft_strdup(env->value);
+// 		new->next = NULL;
+// 		if (!head)
+// 			head = new;
+// 		else
+// 			tail->next = new;
+// 		tail = new;
+// 		env = env->next;
+// 	}
+// 	return (head);
+// }
 
 static int	is_env_modifying_builtin(char *name)
 {
