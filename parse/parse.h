@@ -53,5 +53,7 @@ void		free_redirs(t_redirs **redir);
 void		free_cmd_list(t_cmds **cmd_list);
 t_cmds		*create_cmd_list(t_tokens *tmp);
 void		expand_tokens(t_tokens *tokens, t_envp *env, int last_status);
+void		skip_spaces(char *input, int *i);
+int			skip_escaped_char(char *s, int *i, char quote);
 
 #endif

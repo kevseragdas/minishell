@@ -35,21 +35,8 @@ static int	handle_word(char *s, int *i, t_tokens **head)
 	quote = 0;
 	while (s[*i])
 	{
-		if (s[*i] == '\\' && quote != '\'')
-		{
-			if (quote == 0)
-			{
-				(*i)++;
-				if (s[*i])
-					(*i)++;
-				continue ;
-			}
-			else if (quote == '"' && (s[*i + 1] == '$' || s[*i + 1] == '"' || s[*i + 1] == '\\' || s[*i + 1] == '`'))
-			{
-				(*i) += 2;
-				continue ;
-			}
-		}
+		if (skip_escaped_char(s, i, quote))
+			continue ;
 		quote_check(s[*i], &quote);
 		if (quote == 0 && is_sep(s[*i]))
 			break ;
@@ -84,18 +71,18 @@ static int	handle_double_op(char *s, int *i, t_tokens **head)
 
 static int	handle_operator(char *s, int *i, t_tokens **head)
 {
-	int	is_double;
+	int	error;
 
-	is_double = handle_double_op(s, i, head);
-	if (is_double)
+	error = handle_double_op(s, i, head);
+	if (error)
 		return (0);
 	if (s[*i] == '|')
-		is_double = add_token(head, ft_strdup("|"), PIPE);
+		error = add_token(head, ft_strdup("|"), PIPE);
 	else if (s[*i] == '<')
-		is_double = add_token(head, ft_strdup("<"), REDIR_IN);
+		error = add_token(head, ft_strdup("<"), REDIR_IN);
 	else if (s[*i] == '>')
-		is_double = add_token(head, ft_strdup(">"), REDIR_OUT);
-	if (is_double)
+		error = add_token(head, ft_strdup(">"), REDIR_OUT);
+	if (error)
 		return (1);
 	(*i)++;
 	return (0);
@@ -110,8 +97,7 @@ t_tokens	*lexer(char *input)
 	i = 0;
 	while (input[i])
 	{
-		while (input[i] && (input[i] == ' ' || input[i] == '\t' || input[i] == '\r' || input[i] == '\n' || input[i] == '\v' || input[i] == '\f'))
-			i++;
+		skip_spaces(input, &i);
 		if (!input[i])
 			break ;
 		if (input[i] == '|' || input[i] == '<' || input[i] == '>')
