@@ -75,7 +75,8 @@ int	exec_external(t_cmds **cmd, t_envp **env)
 		handle_enoexec(path, (*cmd)->argv, arr_env);
 	free(path);
 	free_2d_arr(arr_env);
-	//free_envp_list(env); /////////deneme
+	//free_envp_list(env); ////////olmadı
+	//free_cmd_list(cmd);
 	errno_handler();
 	return (1);
 }

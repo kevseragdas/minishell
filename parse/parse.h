@@ -46,6 +46,7 @@ typedef struct s_cmds
 	char			**argv;
 	t_redirs		*redirs;
 	struct s_cmds	*next;
+	struct s_cmds	*prev;
 }	t_cmds;
 
 void		find_redirs(t_cmds **cmd, t_tokens *tmp);

@@ -69,6 +69,7 @@ t_cmds	*create_cmd_list(t_tokens *tmp)
 	cmd->argv = NULL;
 	cmd->redirs = NULL;
 	cmd->next = NULL;
+	cmd->prev = NULL;
 	find_redirs(&cmd, tmp);
 	if (find_argv(&cmd, tmp))
 	{
@@ -80,6 +81,11 @@ t_cmds	*create_cmd_list(t_tokens *tmp)
 	while (pipe_ptr && pipe_ptr->type != PIPE)
 		pipe_ptr = pipe_ptr->next;
 	if (pipe_ptr && pipe_ptr->next)
+	{
 		cmd->next = create_cmd_list(pipe_ptr->next);
+		if (cmd->next)
+        	cmd->next->prev = cmd;
+	}
+		
 	return (cmd);
 }

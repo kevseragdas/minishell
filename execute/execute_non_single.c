@@ -4,7 +4,7 @@ static void	update_parent_fds(t_cmds *cmd, int *prev_fd, int fd[2])
 {
 	if (*prev_fd != STDIN_FILENO)
 		close(*prev_fd);
-	if (!cmd->next)
+	if (!cmd || !cmd->next)
 		return ;
 	close(fd[1]);
 	*prev_fd = fd[0];

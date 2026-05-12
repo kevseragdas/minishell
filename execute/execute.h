@@ -25,10 +25,9 @@ int		is_builtin(char *cmd_name);
 int		find_path(char *argv_0, char **path, t_envp *env);
 void	print_command_error(t_cmds **cmds, t_envp **env, char *cmd, int error_type);
 void	free_2d_arr(char **arr);
-int		handle_heredoc(t_redirs *redir);
 void	set_signals_interactive(void);
 void	set_signals_executing(void);
-int		prepare_heredocs(t_cmds *cmd);
+int	prepare_heredocs(t_cmds **cmd, t_envp **env);
 void	set_signals_heredoc(void);
 
 #endif

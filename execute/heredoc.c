@@ -1,6 +1,7 @@
 #include "execute.h"
 
-static void	read_heredoc(char *delimiter, int write_fd)
+//static void	read_heredoc(char *delimiter, int write_fd)
+static void	read_heredoc(char *delimiter, int write_fd, t_cmds **cmd, t_envp **env)
 {
 	char	*line;
 	int		line_count;
@@ -29,10 +30,13 @@ static void	read_heredoc(char *delimiter, int write_fd)
 		free(line);
 	}
 	close(write_fd);
+	free_cmd_list(cmd);
+	free_envp_list(env);
 	exit(0);
 }
 
-int	handle_heredoc(t_redirs *redir)
+//int	handle_heredoc(t_redirs *redir)
+static int	handle_heredoc(t_redirs *redir, t_cmds **cmd, t_envp **env)
 {
 	int		fd[2];
 	pid_t	pid;
@@ -49,7 +53,7 @@ int	handle_heredoc(t_redirs *redir)
 	{
 		set_signals_heredoc();
 		close(fd[0]);
-		read_heredoc(redir->target, fd[1]);
+		read_heredoc(redir->target, fd[1], cmd, env);
 	}
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
@@ -64,13 +68,16 @@ int	handle_heredoc(t_redirs *redir)
 	return (0);
 }
 
-int	prepare_heredocs(t_cmds *cmd)
+//int	prepare_heredocs(t_cmds *cmd)
+int	prepare_heredocs(t_cmds **cmd, t_envp **env)
 {
 	t_redirs	*redir;
+	t_cmds		*tmp;
 
-	while (cmd)
+	tmp = *cmd;
+	while (tmp)
 	{
-		redir = cmd->redirs;
+		redir = tmp->redirs;
 		while (redir)
 		{
 			if (redir->type == HEREDOC)
@@ -80,12 +87,12 @@ int	prepare_heredocs(t_cmds *cmd)
 					close(redir->fd);
 					redir->fd = -1;
 				}
-				if (handle_heredoc(redir) < 0)
+				if (handle_heredoc(redir, cmd, env) < 0)
 					return (-1);
 			}
 			redir = redir->next;
 		}
-		cmd = cmd->next;
+		tmp = tmp->next;
 	}
 	return (0);
 }
