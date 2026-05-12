@@ -26,6 +26,22 @@ static char	*process_word(char *str, t_envp *env, int stat)
 	{
 		if (handle_quotes(str[i], &q, &i))
 			continue ;
+		if (str[i] == '\\' && q != '\'')
+		{
+			if (q == 0)
+			{
+				i++;
+				if (str[i])
+					res = append_char(res, str[i++]);
+			}
+			else if (q == '"')
+			{
+				if (str[i + 1] == '$' || str[i + 1] == '"' || str[i + 1] == '\\' || str[i + 1] == '`')
+					i++;
+				res = append_char(res, str[i++]);
+			}
+			continue ;
+		}
 		if (str[i] == '$' && q != '\'')
 		{
 			tmp = expand_var(str, &i, env, stat);

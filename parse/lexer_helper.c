@@ -2,7 +2,7 @@
 
 int	is_sep(char c)
 {
-	return (c == ' ' || c == '\t' || c == '<' || c == '>' || c == '|');
+	return (c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\v' || c == '\f' || c == '<' || c == '>' || c == '|');
 }
 
 void	quote_check(char c, char *quote)

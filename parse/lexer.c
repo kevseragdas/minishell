@@ -35,6 +35,21 @@ static int	handle_word(char *s, int *i, t_tokens **head)
 	quote = 0;
 	while (s[*i])
 	{
+		if (s[*i] == '\\' && quote != '\'')
+		{
+			if (quote == 0)
+			{
+				(*i)++;
+				if (s[*i])
+					(*i)++;
+				continue ;
+			}
+			else if (quote == '"' && (s[*i + 1] == '$' || s[*i + 1] == '"' || s[*i + 1] == '\\' || s[*i + 1] == '`'))
+			{
+				(*i) += 2;
+				continue ;
+			}
+		}
 		quote_check(s[*i], &quote);
 		if (quote == 0 && is_sep(s[*i]))
 			break ;
@@ -95,7 +110,7 @@ t_tokens	*lexer(char *input)
 	i = 0;
 	while (input[i])
 	{
-		while (input[i] && (input[i] == ' ' || input[i] == '\t'))
+		while (input[i] && (input[i] == ' ' || input[i] == '\t' || input[i] == '\r' || input[i] == '\n' || input[i] == '\v' || input[i] == '\f'))
 			i++;
 		if (!input[i])
 			break ;
