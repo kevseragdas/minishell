@@ -15,5 +15,5 @@
 
 void	set_signals_interactive(void);
 void	set_signals_heredoc(void);
-extern volatile 	sig_atomic_t g_signal;
+extern volatile sig_atomic_t	g_signal;
 #endif

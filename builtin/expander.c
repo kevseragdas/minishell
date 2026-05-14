@@ -36,7 +36,8 @@ static char	*process_word(char *str, t_envp *env, int stat)
 			}
 			else if (q == '"')
 			{
-				if (str[i + 1] == '$' || str[i + 1] == '"' || str[i + 1] == '\\' || str[i + 1] == '`')
+				if (str[i + 1] == '$' || str[i + 1] == '"' 
+					|| str[i + 1] == '\\' || str[i + 1] == '`')
 					i++;
 				res = append_char(res, str[i++]);
 			}
