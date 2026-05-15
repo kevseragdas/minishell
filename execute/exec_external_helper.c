@@ -15,19 +15,18 @@ void	free_2d_arr(char **arr)
 	free(arr);
 }
 
-//void	print_command_error(const char *cmd, int error_type);
-void	print_command_error(t_cmds **cmds, t_envp **env, char *cmd, int error_type)
+void	print_cmd_error(t_cmds **cmds, t_envp **env, char *cmd, int err_typ)
 {
 	write(2, "minishell: ", 11);
 	write(2, cmd, ft_strlen(cmd));
-	if (error_type == 127)
+	if (err_typ == 127)
 	{
 		if (ft_strchr(cmd, '/'))
 			write(2, ": No such file or directory\n", 28);
 		else
 			write(2, ": command not found\n", 20);
 	}
-	else if (error_type == 126)
+	else if (err_typ == 126)
 		write(2, ": Permission denied\n", 20);
 	free_cmd_list(cmds);
 	free_envp_list(env);

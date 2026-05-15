@@ -23,11 +23,11 @@ int		redirections(t_cmds *cmd);
 int		execute(t_cmds **cmd, t_envp **env);
 int		is_builtin(char *cmd_name);
 int		find_path(char *argv_0, char **path, t_envp *env);
-void	print_command_error(t_cmds **cmds, t_envp **env, char *cmd, int error_type);
+void	print_cmd_error(t_cmds **cmds, t_envp **env, char *cmd, int err_typ);
 void	free_2d_arr(char **arr);
 void	set_signals_interactive(void);
 void	set_signals_executing(void);
-int	prepare_heredocs(t_cmds **cmd, t_envp **env);
+int		prepare_heredocs(t_cmds **cmd, t_envp **env);
 void	set_signals_heredoc(void);
 
 #endif

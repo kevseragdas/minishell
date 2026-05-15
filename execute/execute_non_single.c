@@ -43,7 +43,7 @@ int	execute_non_single(t_cmds **cmd, t_envp **env)
 	int		prev_fd;
 	pid_t	pid;
 	pid_t	last_pid;
-	t_cmds *tmp;
+	t_cmds	*tmp;
 
 	tmp = *cmd;
 	prev_fd = STDIN_FILENO;
@@ -55,7 +55,6 @@ int	execute_non_single(t_cmds **cmd, t_envp **env)
 			perror("pipe");
 			return (1);
 		}
-		//free_envp_list(env); /////////////////test
 		pid = create_child(&tmp, env, prev_fd, fd);
 		if (pid < 0)
 			return (1);
@@ -63,7 +62,5 @@ int	execute_non_single(t_cmds **cmd, t_envp **env)
 		last_pid = pid;
 		tmp = tmp->next;
 	}
-	//free_cmd_list(cmd);
-	//free_envp_list(env); // bunu koyarsam env leri komple göremiyorum
 	return (wait_all_children(last_pid));
 }

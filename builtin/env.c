@@ -1,6 +1,5 @@
 #include "builtin.h"
 
-//int	env_builtin(t_cmds *cmd, t_envp *env_list)
 int	env_builtin(t_cmds **cmd, t_envp **env_list)
 {
 	t_envp	*tmp;

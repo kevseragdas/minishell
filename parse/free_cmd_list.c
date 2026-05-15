@@ -5,8 +5,8 @@ void	free_cmd_list(t_cmds **cmd_list)
 	t_cmds	*tmp;
 	int		i;
 
-	while (*cmd_list && (*cmd_list)->prev)////bu satırlar çok önemliii
-        *cmd_list = (*cmd_list)->prev;////////pipe ta cmds  leri en başa alıp onları silmemiizi saglıyor
+	while (*cmd_list && (*cmd_list)->prev)
+		*cmd_list = (*cmd_list)->prev;
 	while (*cmd_list)
 	{
 		tmp = *cmd_list;
@@ -24,4 +24,10 @@ void	free_cmd_list(t_cmds **cmd_list)
 		*cmd_list = tmp->next;
 		free(tmp);
 	}
+}
+
+void	free_all(t_cmds **cmd, t_envp **env)
+{
+	free_cmd_list(cmd);
+	free_envp_list(env);
 }

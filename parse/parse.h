@@ -2,6 +2,7 @@
 # define PARSE_H
 
 # include "../libft/libft.h"
+# include "../builtin/builtin.h"
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <unistd.h>
@@ -55,6 +56,7 @@ void		free_cmd_list(t_cmds **cmd_list);
 t_cmds		*create_cmd_list(t_tokens *tmp);
 void		expand_tokens(t_tokens *tokens, t_envp *env, int last_status);
 void		skip_spaces(char *input, int *i);
+void		free_all(t_cmds **cmd, t_envp **env);
 int			skip_escaped_char(char *s, int *i, char quote);
 
 #endif
