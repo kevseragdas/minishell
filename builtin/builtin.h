@@ -11,7 +11,7 @@ typedef struct s_envp
 	struct s_envp	*next;
 }	t_envp;
 
-typedef struct s_cmds t_cmds;
+typedef struct s_cmds	t_cmds;
 
 char	*find_env_value(t_envp *env, char *key);
 char	*append_char(char *str, char c);
